@@ -1,6 +1,6 @@
 ## Wavelength Helper
 
-**I did not create the board game Wavelength, I just love to play it. [Please visit the official site](https://www.wavelength.zone/) and buy a physical copy to support the developers!**
+**I did not create the board game Wavelength. I just really enjoy playing it. [Please visit the official site](https://www.wavelength.zone/) and buy a physical copy to support the developers!**
 
 Since the COVID-19 pandemic caused all of California (and most of the USA) to shelter in place, I've been looking for ways to play various board games online over video chat. I realized Wavelength could be played with very little than just the cards to obtain the spectra, but there needed to be a way to share the apparatus that the game comes with for allowing people to move the guess line while keeping the answer hidden until it's time to reveal.
 
