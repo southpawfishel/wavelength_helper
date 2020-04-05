@@ -29,6 +29,19 @@ var canvas = document.getElementById('canvas');
 var context = canvas.getContext("2d");
 window.addEventListener("keydown", handleInput, false);
 
+function onDrag(elem, handler){
+  elem.addEventListener("mousedown", function(){
+    elem.addEventListener("mousemove", handler);
+  });
+  var cleanup = function(){
+    elem.removeEventListener("mousemove", handler);
+  };
+  elem.addEventListener("mouseup", cleanup);
+  elem.addEventListener("mouseleave", cleanup);
+}
+canvas.addEventListener("mousedown", clickToGuess, false);
+onDrag(canvas, clickToGuess);
+
 var currTarget = Math.random();
 var currGuess = 0.5;
 var hide = false;
@@ -56,6 +69,10 @@ hideToggle.onclick = function() {
 
 drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
 
+function redraw(){
+    drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+}
+
 function handleInput(event) {
   switch (event.keyCode) {
     case 37:
@@ -75,6 +92,29 @@ function handleInput(event) {
       drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
       break;
   }
+}
+
+function clickToGuess(event){
+
+  let w = event.target.width;
+  let h = event.target.height;
+
+  let rect = event.target.getBoundingClientRect();
+
+  let mx = event.clientX - rect.left;
+  let my = event.clientY - rect.top;
+
+  let circleX = w / 2;
+  let circleY = h * 0.8;
+
+  let radius = w * 0.43;
+
+  let x = mx - circleX;
+  let y = Math.max(0, -(my - circleY));
+
+  currGuess = 1 - Math.abs(Math.atan2(y,x)/Math.PI);
+  redraw();
+
 }
 
 /** DRAW THE FULL WAVELENGTH BOARD */
