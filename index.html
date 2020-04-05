@@ -195,6 +195,30 @@ function target(ctx, circleX, circleY, answerNormalized, radius, sectionWRadians
   ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians * 2, bullsEyeStart + sectionWRadians * 3);
   ctx.moveTo(circleX, circleY);
   ctx.fill();
+
+  // scoring text
+  try{
+    ctx.save();
+    ctx.translate(circleX, circleY);
+    ctx.rotate(bullsEyeStart - sectionWRadians*1.5 + Math.PI/2);
+
+    let textHeight = -radius*0.85;
+
+    for ( var i = 0 ; i < 5; i ++){
+      let score = 4 - Math.abs(4 - (i + 2));
+
+      let sectionRadianStart = ((bullsEyeStart + sectionWRadians*(i-2))/Math.PI - 1);
+      let guessDiff = (currGuess - sectionRadianStart);
+      let isOnTarget = guessDiff > 0 && guessDiff < sectionWRadians/Math.PI;
+
+      let color = isOnTarget ? "white" : "black";
+      text(ctx, color, 0, textHeight, score);
+      ctx.rotate(sectionWRadians);
+    }
+  }finally{
+    ctx.restore();
+  }
+
 }
 
 /** DRAW AN ARROW HORIZONTALLY */
