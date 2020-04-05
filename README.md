@@ -1,37 +1,11 @@
-## Welcome to GitHub Pages
+## Wavelength Helper
 
-You can use the [editor on GitHub](https://github.com/southpawfishel/wavelength_helper/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+**I did not create the board game Wavelength, I just love to play it. [Please visit the official site](https://www.wavelength.zone/) and buy a physical copy to support the developers!**
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Since the COVID-19 pandemic caused all of California (and most of the USA) to shelter in place, I've been looking for ways to play various board games online over video chat. I realized Wavelength could be played with very little than just the cards to obtain the spectra, but there needed to be a way to share the apparatus that the game comes with for allowing people to move the guess line while keeping the answer hidden until it's time to reveal.
 
-### Markdown
+The idea of this tool is that people take turns sharing their screen. On a given person's turn, they draw a spectrum card and input the values into the tool and generate a random target. Once they come up with a clue, they hide the target and share their screen so everyone else can see the spectrum. Using the left and right arrows, the guessers direct the player on how they should move the guess needle until everyone on the call is happy with the placement, then you the clue giver reveals the target.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+I hope that others who love this game as much as I do may find this useful, and if you have contributions / bug fixes please do submit a pull request.
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/southpawfishel/wavelength_helper/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+-Dave
