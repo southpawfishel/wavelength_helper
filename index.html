@@ -1,0 +1,265 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Wavelength Helper</title>
+  <meta name="description" content="A helper app for playing Wavelength remotely while sheltering in place">
+  <meta name="author" content="Dave Fishel">
+</head>
+
+<body>
+  <canvas id="canvas" width="768" height="576" style="background:#595959">
+    This text is displayed if your browser does not support HTML5 Canvas.
+  </canvas>
+  <form>
+    <label for="leftItem">Left option</label><br>
+    <input type="text" id="leftItem" name="leftItem" value="Unsexy pokémon"><br>
+    <label for="rightItem">Right option</label><br>
+    <input type="text" id="rightItem" name="rightItem" value="Sexy pokémon"><br>
+  </form>
+  <button id="reroll">Reroll Target</button><br>
+  <button id="hideToggle">Toggle Target Hidden</button><br>
+
+  <script>
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext("2d");
+window.addEventListener("keydown", handleInput, false);
+
+var currTarget = Math.random();
+var currGuess = 0.5;
+var hide = false;
+
+var left = document.getElementById('leftItem');
+left.oninput = function() {
+  drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+};
+var right = document.getElementById('rightItem');
+right.oninput = function() {
+  drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+};
+
+var reroll = document.getElementById('reroll');
+reroll.onclick = function() {
+  currTarget = Math.random();
+  drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+};
+
+var hideToggle = document.getElementById('hideToggle');
+hideToggle.onclick = function() {
+  hide = !hide;
+  drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+};
+
+drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+
+function handleInput(event) {
+  switch (event.keyCode) {
+    case 37:
+      // left key pressed
+      currGuess -= 0.01;
+      if (currGuess <= 0) {
+        currGuess = 0;
+      }
+      drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+      break;
+    case 39:
+      // right key pressed
+      currGuess += 0.01;
+      if (currGuess >= 1) {
+        currGuess = 1;
+      }
+      drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+      break;
+  }
+}
+
+/** DRAW THE FULL WAVELENGTH BOARD */
+function drawBoard(ctx, w, h, option1, option2, answerNormalized, guessNormalized, hideAnswer) {
+
+  // Prep the drawing context
+  context.textAlign = "center";
+  context.lineCap = "round";
+
+  // Constants
+  let circleX = w / 2;
+  let circleY = h * 0.8;
+
+  // Outer circle
+  ctx.fillStyle = "#0e1232";
+  ctx.beginPath();
+  ctx.arc(circleX, circleY, w * 0.48, 0, 2 * Math.PI);
+  ctx.fill();
+
+  // Inner circle
+  ctx.fillStyle = "#d9d5cb";
+  ctx.beginPath();
+  ctx.arc(circleX, circleY, w * 0.43, Math.PI, 2 * Math.PI);
+  ctx.fill();
+
+  // Target
+  target(ctx, circleX, circleY, answerNormalized, w * 0.43, Math.PI * 0.06);
+
+  // Cover bottom half of inner circle in case target bled into it
+  ctx.fillStyle = "#0e1232";
+  ctx.beginPath();
+  ctx.arc(circleX, circleY, w * 0.43, 0, Math.PI);
+  ctx.fill();
+
+  // Cover up the target
+  if (hideAnswer == true) {
+    ctx.fillStyle = "#00c3ff";
+    ctx.beginPath();
+    ctx.arc(circleX, circleY, w * 0.43, Math.PI, 2 * Math.PI);
+    ctx.fill();
+  }
+
+  // Guess knob
+  ctx.fillStyle = "#ff2a00";
+  ctx.beginPath();
+  ctx.arc(circleX, circleY, w * 0.1, Math.PI, 2 * Math.PI);
+  ctx.fill();
+
+  // Guess line
+  let guessLen = w * 0.4;
+  let range = Math.PI;
+  ctx.strokeStyle = "#ff2a00";
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  let guessX = Math.cos(guessNormalized * range);
+  let guessY = Math.sin(guessNormalized * range);
+  ctx.lineTo(circleX - guessX * guessLen, circleY - guessY * guessLen);
+  // Set up appropriate stroke width for the arrows
+  context.lineWidth = canvas.width * 0.008;
+  ctx.stroke();
+
+  // Spectrum
+  let spectrumItemWidth = w * 0.34;
+  let spectrumItemHeight = w * 0.21;
+  let arrowWidth = w * 0.11;
+  // Set up appropriate stroke width for the arrows
+  context.lineWidth = canvas.width * 0.004;
+
+  // Left option
+  roundRect(ctx, "#d491a4", circleX - spectrumItemWidth, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
+  text(ctx, "#0e1232", circleX - spectrumItemWidth / 2, h - spectrumItemHeight * 0.4, option1);
+  arrow(ctx, "#0e1232", circleX - spectrumItemWidth / 2 + arrowWidth / 2, circleX - spectrumItemWidth / 2 - arrowWidth / 2, h - spectrumItemHeight * 0.65, w * 0.011, w * 0.015);
+
+  // Right option
+  roundRect(ctx, "#a1d0cc", circleX, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
+  text(ctx, "#0e1232", circleX + spectrumItemWidth / 2, h - spectrumItemHeight * 0.4, option2);
+  arrow(ctx, "#0e1232", circleX + spectrumItemWidth / 2 - arrowWidth / 2, circleX + spectrumItemWidth / 2 + arrowWidth / 2, h - spectrumItemHeight * 0.65, w * 0.011, w * 0.015);
+
+}
+
+/** DRAW THE 3 TIERED TARGET */
+function target(ctx, circleX, circleY, answerNormalized, radius, sectionWRadians) {
+  let range = Math.PI - sectionWRadians;
+
+  // bulls eye
+  let bullsEyeStart = Math.PI + range * answerNormalized;
+  ctx.fillStyle = "#cc6245";
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart, bullsEyeStart + sectionWRadians);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  // inner bits
+  ctx.fillStyle = "#a7c7a0";
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart - sectionWRadians, bullsEyeStart);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians, bullsEyeStart + sectionWRadians * 2);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  // outer bits
+  ctx.fillStyle = "#c29140";
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart - sectionWRadians * 2, bullsEyeStart - sectionWRadians);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians * 2, bullsEyeStart + sectionWRadians * 3);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+}
+
+/** DRAW AN ARROW HORIZONTALLY */
+function arrow(ctx, color, fromX, toX, y, arrowheadX, arrowheadY) {
+  ctx.strokeStyle = color;
+  var sign = 1;
+  if (fromX < toX) {
+    sign = -1;
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(fromX, y);
+  ctx.lineTo(toX, y);
+  ctx.moveTo(toX, y);
+  ctx.lineTo(toX + sign * arrowheadX, y + arrowheadY);
+  ctx.moveTo(toX, y);
+  ctx.lineTo(toX + sign * arrowheadX, y - arrowheadY);
+  ctx.stroke();
+}
+
+/** DRAW CARD TEXT */
+function text(ctx, color, x, y, text, font) {
+  ctx.fillStyle = color;
+  if (typeof font === 'undefined') {
+    font = "16px Futura";
+  }
+  ctx.font = font;
+  ctx.fillText(text, x, y);
+}
+
+/** DRAW CARD RECTS */
+function roundRect(ctx, color, x, y, width, height, radius) {
+  ctx.fillStyle = color;
+  if (typeof radius === 'undefined') {
+    radius = 5;
+  }
+  if (typeof radius === 'number') {
+    radius = {
+      tl: radius,
+      tr: radius,
+      br: radius,
+      bl: radius
+    };
+  } else {
+    var defaultRadius = {
+      tl: 0,
+      tr: 0,
+      br: 0,
+      bl: 0
+    };
+    for (var side in defaultRadius) {
+      radius[side] = radius[side] || defaultRadius[side];
+    }
+  }
+  ctx.beginPath();
+  ctx.moveTo(x + radius.tl, y);
+  ctx.lineTo(x + width - radius.tr, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  ctx.lineTo(x + width, y + height - radius.br);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  ctx.lineTo(x + radius.bl, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  ctx.lineTo(x, y + radius.tl);
+  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+  ctx.closePath();
+  ctx.fill();
+}
+  </script>
+</body>
+</html>
