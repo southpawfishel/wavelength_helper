@@ -7,6 +7,8 @@
   <title>Wavelength Helper</title>
   <meta name="description" content="A helper app for playing Wavelength remotely while sheltering in place">
   <meta name="author" content="Dave Fishel">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width">
 </head>
 
 <body>
@@ -26,8 +28,29 @@
 
   <script>
 var canvas = document.getElementById('canvas');
+var cWidth = canvas.width;
+var cHeight = canvas.height;
 var context = canvas.getContext("2d");
 window.addEventListener("keydown", handleInput, false);
+
+// support retina
+function updateContentScale(canvas){
+
+  var contentScale = window.devicePixelRatio;
+
+  if ( contentScale != 1){
+
+    canvas.style.width = cWidth + "px";
+    canvas.style.height = cHeight + "px";
+
+    canvas.width = cWidth * contentScale;
+    canvas.height = cHeight * contentScale;
+
+    var ctx = canvas.getContext("2d");
+    ctx.scale(contentScale, contentScale);
+  }
+}
+updateContentScale(canvas);
 
 function onDrag(elem, handler){
   elem.addEventListener("mousedown", function(){
@@ -57,29 +80,29 @@ var hide = false;
 
 var left = document.getElementById('leftItem');
 left.oninput = function() {
-  drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
 };
 var right = document.getElementById('rightItem');
 right.oninput = function() {
-  drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
 };
 
 var reroll = document.getElementById('reroll');
 reroll.onclick = function() {
   currTarget = Math.random();
-  drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
 };
 
 var hideToggle = document.getElementById('hideToggle');
 hideToggle.onclick = function() {
   hide = !hide;
-  drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
 };
 
-drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
 
 function redraw(){
-    drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+    drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
 }
 
 function handleInput(event) {
@@ -90,7 +113,7 @@ function handleInput(event) {
       if (currGuess <= 0) {
         currGuess = 0;
       }
-      drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+      drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
       break;
     case 39:
       // right key pressed
@@ -98,15 +121,12 @@ function handleInput(event) {
       if (currGuess >= 1) {
         currGuess = 1;
       }
-      drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
+      drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
       break;
   }
 }
 
 function clickToGuess(event){
-
-  let w = event.target.width;
-  let h = event.target.height;
 
   let rect = event.target.getBoundingClientRect();
 
@@ -125,10 +145,10 @@ function clickToGuess(event){
   let mx = cx - rect.left;
   let my = cy - rect.top;
 
-  let circleX = w / 2;
-  let circleY = h * 0.8;
+  let circleX = cWidth / 2;
+  let circleY = cHeight * 0.8;
 
-  let radius = w * 0.43;
+  let radius = cWidth * 0.43;
 
   let x = mx - circleX;
   let y = Math.max(0, -(my - circleY));
@@ -194,7 +214,7 @@ function drawBoard(ctx, w, h, option1, option2, answerNormalized, guessNormalize
   let guessY = Math.sin(guessNormalized * range);
   ctx.lineTo(circleX - guessX * guessLen, circleY - guessY * guessLen);
   // Set up appropriate stroke width for the arrows
-  context.lineWidth = canvas.width * 0.008;
+  context.lineWidth = cWidth * 0.008;
   ctx.stroke();
 
   // Spectrum
@@ -202,7 +222,7 @@ function drawBoard(ctx, w, h, option1, option2, answerNormalized, guessNormalize
   let spectrumItemHeight = w * 0.21;
   let arrowWidth = w * 0.11;
   // Set up appropriate stroke width for the arrows
-  context.lineWidth = canvas.width * 0.004;
+  context.lineWidth = cWidth * 0.004;
 
   // Left option
   roundRect(ctx, "#d491a4", circleX - spectrumItemWidth, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
