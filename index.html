@@ -80,33 +80,29 @@ var hide = false;
 
 var left = document.getElementById('leftItem');
 left.oninput = function() {
-  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+  redraw();
 };
 var right = document.getElementById('rightItem');
 right.oninput = function() {
-  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+  redraw();
 };
 
 var reroll = document.getElementById('reroll');
 reroll.onclick = function() {
   currTarget = Math.random();
-  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+  redraw();
 };
 
 var hideToggle = document.getElementById('hideToggle');
 hideToggle.onclick = function() {
   hide = !hide;
-  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+  redraw();
 };
 
-drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+redraw();
 
 function redraw(){
     drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
-}
-
-function redraw(){
-    drawBoard(context, canvas.width, canvas.height, left.value, right.value, currTarget, currGuess, hide);
 }
 
 function handleInput(event) {
@@ -117,7 +113,7 @@ function handleInput(event) {
       if (currGuess <= 0) {
         currGuess = 0;
       }
-      drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+      redraw();
       break;
     case 39:
       // right key pressed
@@ -125,7 +121,7 @@ function handleInput(event) {
       if (currGuess >= 1) {
         currGuess = 1;
       }
-      drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+      redraw();
       break;
   }
 }
