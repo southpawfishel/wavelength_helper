@@ -1,0 +1,462 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Wavelength Helper</title>
+  <meta name="description" content="A helper app for playing Wavelength remotely while sheltering in place">
+  <meta name="author" content="Dave Fishel">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width">
+</head>
+
+<body>
+  <h2>I did not create the board game Wavelength. I just really enjoy playing it. <a href="https://www.wavelength.zone/">Please visit the official site</a> and buy a physical copy to support the developers!</h2><br><br>
+  <div>
+    <button id="connectButton">Connect</button>
+    <div id="connectStatusContainer">
+      You are <span id="connectStatus">not connected</span>.
+    </div>
+    </div>
+  <canvas id="canvas" width="768" height="576" style="background:#595959">
+    This text is displayed if your browser does not support HTML5 Canvas.
+  </canvas>
+  <form>
+    <label for="leftItem">Left option</label><br>
+    <input type="text" id="leftItem" name="leftItem" value="Bad use of time during pandemic"><br>
+    <label for="rightItem">Right option</label><br>
+    <input type="text" id="rightItem" name="rightItem" value="Good use of time during pandemic"><br>
+  </form>
+  <button id="reroll">Reroll Target</button><br>
+  <button id="hideToggle">Toggle Target Hidden</button><br><br>
+  <p>Use the left and right arrow keys to move the guess line.</p>
+
+  <script>
+var canvas = document.getElementById('canvas');
+var cWidth = canvas.width;
+var cHeight = canvas.height;
+var context = canvas.getContext("2d");
+window.addEventListener("keydown", handleInput, false);
+
+
+
+
+// support retina
+function updateContentScale(canvas){
+
+  var contentScale = window.devicePixelRatio;
+
+  if ( contentScale != 1){
+
+    canvas.style.width = cWidth + "px";
+    canvas.style.height = cHeight + "px";
+
+    canvas.width = cWidth * contentScale;
+    canvas.height = cHeight * contentScale;
+
+    var ctx = canvas.getContext("2d");
+    ctx.scale(contentScale, contentScale);
+  }
+}
+updateContentScale(canvas);
+
+function onDrag(elem, handler){
+  elem.addEventListener("mousedown", function(){
+    elem.addEventListener("mousemove", handler);
+  });
+  var cleanup = function(){
+    elem.removeEventListener("mousemove", handler);
+  };
+  elem.addEventListener("mouseup", cleanup);
+  elem.addEventListener("mouseleave", cleanup);
+
+  elem.addEventListener("touchstart", function(){
+    elem.addEventListener("touchmove", handler);
+  });
+  var cleanup = function(){
+    elem.removeEventListener("touchmove", handler);
+  };
+  elem.addEventListener("touchend", cleanup);
+}
+canvas.addEventListener("mousedown", clickToGuess, false);
+canvas.addEventListener("touchstart", clickToGuess, false);
+onDrag(canvas, clickToGuess);
+
+var currTarget = Math.random();
+var currGuess = 0.5;
+var hide = false;
+
+var left = document.getElementById('leftItem');
+left.oninput = function() {
+  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+};
+var right = document.getElementById('rightItem');
+right.oninput = function() {
+  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+};
+
+var reroll = document.getElementById('reroll');
+reroll.onclick = function() {
+  currTarget = Math.random();
+  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+};
+
+var hideToggle = document.getElementById('hideToggle');
+hideToggle.onclick = function() {
+  hide = !hide;
+  drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+};
+
+drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+
+function redraw(){
+  setUserData("currGuess", currGuess);
+  sendUpdate();
+
+    drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+}
+
+function handleInput(event) {
+  switch (event.keyCode) {
+    case 37:
+      // left key pressed
+      currGuess -= 0.01;
+      if (currGuess <= 0) {
+        currGuess = 0;
+      }
+      drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+      break;
+    case 39:
+      // right key pressed
+      currGuess += 0.01;
+      if (currGuess >= 1) {
+        currGuess = 1;
+      }
+      drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+      break;
+  }
+}
+
+function clickToGuess(event){
+
+  let rect = event.target.getBoundingClientRect();
+
+  var cx,cy;
+  if ( event.targetTouches ){
+    cx = event.targetTouches[0].clientX;
+    cy = event.targetTouches[0].clientY;
+
+    // prevent scrolling
+    event.preventDefault();
+  }else {
+    cx = event.clientX;
+    cy = event.clientY;
+  }
+
+  let mx = cx - rect.left;
+  let my = cy - rect.top;
+
+  let circleX = cWidth / 2;
+  let circleY = cHeight * 0.8;
+
+  let radius = cWidth * 0.43;
+
+  let x = mx - circleX;
+  let y = Math.max(0, -(my - circleY));
+
+  currGuess = 1 - Math.abs(Math.atan2(y,x)/Math.PI);
+  redraw();
+
+}
+
+/** DRAW THE FULL WAVELENGTH BOARD */
+function drawBoard(ctx, w, h, option1, option2, answerNormalized, guessNormalized, hideAnswer) {
+
+  // Prep the drawing context
+  context.textAlign = "center";
+  context.lineCap = "round";
+
+  // Constants
+  let circleX = w / 2;
+  let circleY = h * 0.8;
+
+  // Outer circle
+  ctx.fillStyle = "#0e1232";
+  ctx.beginPath();
+  ctx.arc(circleX, circleY, w * 0.48, 0, 2 * Math.PI);
+  ctx.fill();
+
+  // Inner circle
+  ctx.fillStyle = "#d9d5cb";
+  ctx.beginPath();
+  ctx.arc(circleX, circleY, w * 0.43, Math.PI, 2 * Math.PI);
+  ctx.fill();
+
+  // Target
+  target(ctx, circleX, circleY, answerNormalized, w * 0.43, Math.PI * 0.06);
+
+  // Cover bottom half of inner circle in case target bled into it
+  ctx.fillStyle = "#0e1232";
+  ctx.beginPath();
+  ctx.arc(circleX, circleY, w * 0.43, 0, Math.PI);
+  ctx.fill();
+
+  // Cover up the target
+  if (hideAnswer == true) {
+    ctx.fillStyle = "#00c3ff";
+    ctx.beginPath();
+    ctx.arc(circleX, circleY, w * 0.43, Math.PI, 2 * Math.PI);
+    ctx.fill();
+  }
+
+  // Guess knob
+  ctx.fillStyle = "#ff2a00";
+  ctx.beginPath();
+  ctx.arc(circleX, circleY, w * 0.1, Math.PI, 2 * Math.PI);
+  ctx.fill();
+
+  // Guess line
+  let guessLen = w * 0.4;
+  let range = Math.PI;
+  ctx.strokeStyle = "#ff2a00";
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  let guessX = Math.cos(guessNormalized * range);
+  let guessY = Math.sin(guessNormalized * range);
+  ctx.lineTo(circleX - guessX * guessLen, circleY - guessY * guessLen);
+  // Set up appropriate stroke width for the arrows
+  context.lineWidth = cWidth * 0.008;
+  ctx.stroke();
+
+  // Spectrum
+  let spectrumItemWidth = w * 0.34;
+  let spectrumItemHeight = w * 0.21;
+  let arrowWidth = w * 0.11;
+  // Set up appropriate stroke width for the arrows
+  context.lineWidth = cWidth * 0.004;
+
+  // Left option
+  roundRect(ctx, "#d491a4", circleX - spectrumItemWidth, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
+  text(ctx, "#0e1232", circleX - spectrumItemWidth / 2, h - spectrumItemHeight * 0.4, option1);
+  arrow(ctx, "#0e1232", circleX - spectrumItemWidth / 2 + arrowWidth / 2, circleX - spectrumItemWidth / 2 - arrowWidth / 2, h - spectrumItemHeight * 0.65, w * 0.011, w * 0.015);
+
+  // Right option
+  roundRect(ctx, "#a1d0cc", circleX, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
+  text(ctx, "#0e1232", circleX + spectrumItemWidth / 2, h - spectrumItemHeight * 0.4, option2);
+  arrow(ctx, "#0e1232", circleX + spectrumItemWidth / 2 - arrowWidth / 2, circleX + spectrumItemWidth / 2 + arrowWidth / 2, h - spectrumItemHeight * 0.65, w * 0.011, w * 0.015);
+
+}
+
+/** DRAW THE 3 TIERED TARGET */
+function target(ctx, circleX, circleY, answerNormalized, radius, sectionWRadians) {
+  let range = Math.PI - sectionWRadians;
+
+  // bulls eye
+  let bullsEyeStart = Math.PI + range * answerNormalized;
+  ctx.fillStyle = "#cc6245";
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart, bullsEyeStart + sectionWRadians);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  // inner bits
+  ctx.fillStyle = "#a7c7a0";
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart - sectionWRadians, bullsEyeStart);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians, bullsEyeStart + sectionWRadians * 2);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  // outer bits
+  ctx.fillStyle = "#c29140";
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart - sectionWRadians * 2, bullsEyeStart - sectionWRadians);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(circleX, circleY);
+  ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians * 2, bullsEyeStart + sectionWRadians * 3);
+  ctx.moveTo(circleX, circleY);
+  ctx.fill();
+
+  // scoring text
+  try{
+    ctx.save();
+    ctx.translate(circleX, circleY);
+    ctx.rotate(bullsEyeStart - sectionWRadians*1.5 + Math.PI/2);
+
+    let textHeight = -radius*0.85;
+
+    for ( var i = 0 ; i < 5; i ++){
+      let score = 4 - Math.abs(4 - (i + 2));
+
+      let sectionRadianStart = ((bullsEyeStart + sectionWRadians*(i-2))/Math.PI - 1);
+      let guessDiff = (currGuess - sectionRadianStart);
+      let isOnTarget = guessDiff > 0 && guessDiff < sectionWRadians/Math.PI;
+
+      let color = isOnTarget ? "white" : "black";
+      text(ctx, color, 0, textHeight, score);
+      ctx.rotate(sectionWRadians);
+    }
+  }finally{
+    ctx.restore();
+  }
+
+}
+
+/** DRAW AN ARROW HORIZONTALLY */
+function arrow(ctx, color, fromX, toX, y, arrowheadX, arrowheadY) {
+  ctx.strokeStyle = color;
+  var sign = 1;
+  if (fromX < toX) {
+    sign = -1;
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(fromX, y);
+  ctx.lineTo(toX, y);
+  ctx.moveTo(toX, y);
+  ctx.lineTo(toX + sign * arrowheadX, y + arrowheadY);
+  ctx.moveTo(toX, y);
+  ctx.lineTo(toX + sign * arrowheadX, y - arrowheadY);
+  ctx.stroke();
+}
+
+/** DRAW CARD TEXT */
+function text(ctx, color, x, y, text, font) {
+  ctx.fillStyle = color;
+  if (typeof font === 'undefined') {
+    font = "16px Futura";
+  }
+  ctx.font = font;
+  ctx.fillText(text, x, y);
+}
+
+/** DRAW CARD RECTS */
+function roundRect(ctx, color, x, y, width, height, radius) {
+  ctx.fillStyle = color;
+  if (typeof radius === 'undefined') {
+    radius = 5;
+  }
+  if (typeof radius === 'number') {
+    radius = {
+      tl: radius,
+      tr: radius,
+      br: radius,
+      bl: radius
+    };
+  } else {
+    var defaultRadius = {
+      tl: 0,
+      tr: 0,
+      br: 0,
+      bl: 0
+    };
+    for (var side in defaultRadius) {
+      radius[side] = radius[side] || defaultRadius[side];
+    }
+  }
+  ctx.beginPath();
+  ctx.moveTo(x + radius.tl, y);
+  ctx.lineTo(x + width - radius.tr, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  ctx.lineTo(x + width, y + height - radius.br);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  ctx.lineTo(x + radius.bl, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  ctx.lineTo(x, y + radius.tl);
+  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+  ctx.closePath();
+  ctx.fill();
+}
+  </script>
+
+
+
+  <script>
+    // websocket stuff
+    function uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    var uid = uuidv4();
+    var connectButton = document.getElementById("connectButton");
+
+    var connectStatus = document.getElementById("connectStatus");
+    function setConnectStatus(status){
+      connectStatus.textContent = status;
+    }
+    
+
+    // relative path to websocket 
+    function relativePath(path){
+      var loc = window.location, new_uri;
+      if (loc.protocol === "https:") {
+        new_uri = "wss:";
+      } else {
+        new_uri = "ws:";
+      }
+      new_uri += "//" + loc.host;
+      new_uri += loc.pathname + path;
+      return new_uri
+    }
+
+    function setUserData(k,v){
+      userData[k] = v;
+    }
+
+
+    function sendUpdate(){
+      ws.send(JSON.stringify(userData));
+    }
+
+    function connect(){
+      userData = {
+        uid: uid
+      };
+
+      var ws = new WebSocket(relativePath("ws"));
+      setConnectStatus("connecting..");
+
+      ws.onopen = function (event) {
+        connectButton.style.display = "none";
+        
+        console.log("connected.");
+        setConnectStatus("connected");
+        
+        // exampleSocket.send("Here's some text that the server is urgently awaiting!"); 
+        ws.send("Here's some text that the server is urgently awaiting!"); 
+        
+        
+
+      };
+      ws.onmessage = function (event) {
+        console.log(event.data);
+      }
+      ws.onclose = function (event){
+        console.log("closing");
+        setConnectStatus("not connected");
+        connectButton.style.display = null;
+        console.log(event);
+      }
+      
+    }
+
+    connectButton.addEventListener("mousedown", connect);
+
+    </script>
+</body>
+</html>
