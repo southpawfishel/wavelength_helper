@@ -14,7 +14,15 @@
 <body>
   <h2>I did not create the board game Wavelength. I just really enjoy playing it. <a href="https://www.wavelength.zone/">Please visit the official site</a> and buy a physical copy to support the developers!</h2><br><br>
   <div>
-    <button id="connectButton">Connect</button>
+    <div id="notConnectedContainer">
+      <button id="connectBlueButton" style="border-color: blue;">Connect Blue</button>
+      <button id="connectGreenButton" style="border-color: green;">Connect Green</button>
+    </div>
+    <div id="connectedContainer" style="display:none;">
+      <div id="teamDiv"></div>
+        <div><label for="showGreen"><input id="showGreen" name="shownTeam" type="radio" value="green" checked >Show Green</label></div>
+        <div><label for="showBlue"><input id="showBlue" name="shownTeam" type="radio" value="blue" >Show Blue</label></div>
+    </div>
     <div id="connectStatusContainer">
       You are <span id="connectStatus">not connected</span>.
     </div>
@@ -38,6 +46,9 @@ var cWidth = canvas.width;
 var cHeight = canvas.height;
 var context = canvas.getContext("2d");
 window.addEventListener("keydown", handleInput, false);
+
+var sendGuess = function(guess){};
+var networkData;
 
 // support retina
 function updateContentScale(canvas){
@@ -108,8 +119,7 @@ hideToggle.onclick = function() {
 redraw();
 
 function redraw(){
-  setUserData("currGuess", currGuess);
-  sendUpdate();
+
 
     drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
 }
@@ -123,6 +133,7 @@ function handleInput(event) {
         currGuess = 0;
       }
       redraw();
+      sendGuess(currGuess);
       break;
     case 39:
       // right key pressed
@@ -131,6 +142,7 @@ function handleInput(event) {
         currGuess = 1;
       }
       redraw();
+      sendGuess(currGuess);
       break;
   }
 }
@@ -163,6 +175,7 @@ function clickToGuess(event){
   let y = Math.max(0, -(my - circleY));
 
   currGuess = 1 - Math.abs(Math.atan2(y,x)/Math.PI);
+  sendGuess(currGuess);
   redraw();
 
 }
@@ -214,17 +227,42 @@ function drawBoard(ctx, w, h, option1, option2, answerNormalized, guessNormalize
   ctx.fill();
 
   // Guess line
-  let guessLen = w * 0.4;
-  let range = Math.PI;
-  ctx.strokeStyle = "#ff2a00";
-  ctx.beginPath();
-  ctx.moveTo(circleX, circleY);
-  let guessX = Math.cos(guessNormalized * range);
-  let guessY = Math.sin(guessNormalized * range);
-  ctx.lineTo(circleX - guessX * guessLen, circleY - guessY * guessLen);
-  // Set up appropriate stroke width for the arrows
-  context.lineWidth = cWidth * 0.008;
-  ctx.stroke();
+  function drawGuess(guessNormalized, color){
+    let guessLen = w * 0.4;
+    let range = Math.PI;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(circleX, circleY);
+    let guessX = Math.cos(guessNormalized * range);
+    let guessY = Math.sin(guessNormalized * range);
+    ctx.lineTo(circleX - guessX * guessLen, circleY - guessY * guessLen);
+    // Set up appropriate stroke width for the arrows
+    context.lineWidth = cWidth * 0.008;
+    ctx.stroke();
+
+  }
+  drawGuess(guessNormalized, "#ff2a00");
+
+
+  if ( networkData ){
+    var teamShown = document.getElementById("showGreen").checked ? "green" : "blue";
+
+    var now = new Date().getTime();
+    for (var key in networkData){
+      var userData = networkData[key];
+
+      if ( (now - userData.ts ) > 120000){
+        delete networkData[key];
+        console.log("deleting " + key);
+        continue;
+      }
+
+      if ( teamShown == userData.team && userData.currGuess ){
+        drawGuess( userData.currGuess, teamShown);
+      }
+    }
+  }
+
 
   // Spectrum
   let spectrumItemWidth = w * 0.34;
@@ -389,10 +427,23 @@ function roundRect(ctx, color, x, y, width, height, radius) {
       });
     }
 
-    var uid = uuidv4();
-    var connectButton = document.getElementById("connectButton");
+    var $ = function(id){ return document.getElementById(id); };
 
-    var connectStatus = document.getElementById("connectStatus");
+    var uid = uuidv4();
+    var userData;
+    var ws, networkData;
+    var connectGreenButton = $("connectGreenButton");
+    var connectBlueButton = $("connectBlueButton");
+
+    var connectedContainer = $("connectedContainer");
+    var notConnectedContainer = $("notConnectedContainer");
+
+    var showGreen = $("showGreen");
+    var showBlue = $("showBlue");
+    showGreen.addEventListener("change", redraw);
+    showBlue.addEventListener("change", redraw);
+
+    var connectStatus = $("connectStatus");
     function setConnectStatus(status){
       connectStatus.textContent = status;
     }
@@ -411,48 +462,62 @@ function roundRect(ctx, color, x, y, width, height, radius) {
       return new_uri
     }
 
-    function setUserData(k,v){
-      userData[k] = v;
+    function sendGuess(guess){
+      if ( ws ){
+        var data = Object.assign({}, userData, { currGuess: guess} );
+        ws.send(JSON.stringify(data));
+      }
     }
 
 
-    function sendUpdate(){
-      ws.send(JSON.stringify(userData));
-    }
-
-    function connect(){
+    function connect(team){
       userData = {
-        uid: uid
-      };
+        uid: uid,
+        team: team
+      }
+      networkData = {};
 
-      var ws = new WebSocket(relativePath("ws"));
+      ws = new WebSocket(relativePath("ws"));
       setConnectStatus("connecting..");
 
       ws.onopen = function (event) {
-        connectButton.style.display = "none";
+
+        $("teamDiv").textContent = "You are on team " + team + ".";
+        $("teamDiv").style.color = team;
+        
+        notConnectedContainer.style.display = "none";
+        connectedContainer.style.display = null;
+
+        
         
         console.log("connected.");
         setConnectStatus("connected");
         
-        // exampleSocket.send("Here's some text that the server is urgently awaiting!"); 
-        ws.send("Here's some text that the server is urgently awaiting!"); 
-        
-        
-
       };
       ws.onmessage = function (event) {
-        console.log(event.data);
+        var data = JSON.parse(event.data);
+
+        data.ts = new Date().getTime();
+        networkData[data.uid] = data;
+        redraw();
+
       }
       ws.onclose = function (event){
         console.log("closing");
         setConnectStatus("not connected");
-        connectButton.style.display = null;
+
+        notConnectedContainer.style.display = null;
+        connectedContainer.style.display = "none";
+
+        networkData = null;
+
         console.log(event);
       }
       
     }
 
-    connectButton.addEventListener("mousedown", connect);
+    connectGreenButton.addEventListener("click", connect.bind(null, "green"));
+    connectBlueButton.addEventListener("click", connect.bind(null, "blue"));
 
     </script>
 </body>

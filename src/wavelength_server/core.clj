@@ -17,13 +17,22 @@
   
   (:gen-class))
 
+(def connected (atom #{}))
+
+
 (defn comm-handler [ring-request]
   ;; unified API for WebSocket and HTTP long polling/streaming
   (with-channel ring-request channel    ; get the channel
-    (on-receive channel (fn [data] ; two way communication
-                          (println "to data" data)
-                          (send! channel data)))
-    (on-close channel (fn [status]))))
+    (swap! connected conj channel)
+    (on-receive channel (fn [data]      ; two way communication
+
+                          (doseq [ch @connected
+                                  :when (not= ch channel)]
+                            (try
+                              (send! ch data)
+                              (catch Exception e)))))
+    (on-close channel (fn [status]
+                        (swap! connected disj channel)))))
 
 
 
@@ -47,4 +56,5 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (def server (run-server #'my-routes {:port 8080}))
+  )
