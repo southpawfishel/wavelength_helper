@@ -9,6 +9,69 @@
   <meta name="author" content="Dave Fishel">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width">
+  <style>
+    table {
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid rgb(196,196,196);
+    }
+
+    #greenPeeps  {
+        color: green;
+        cursor: pointer;
+        text-align: center;
+    }
+    #bluePeeps  {
+        color: blue;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    #reveal.disabled {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    #reveal {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        border-radius: .25rem;
+        border: 1px solid transparent;
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        padding: .375rem .75rem;
+        text-align: center;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        user-select: none;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+  </style>
+  <script>
+    var isMarqueeScrolling = false;
+    function startMarquee(m){
+      if (isMarqueeScrolling) return;
+
+      m.start();
+      isMarqueeScrolling = true;
+
+      var scrollWidth = m.clientWidth + context.measureText(m.textContent).width;
+      var scrollTime = scrollWidth /(m.scrollAmount / m.scrollDelay  );
+      setTimeout(function(){
+        isMarqueeScrolling = false;
+        m.loop += 1;
+      },scrollTime);
+      
+    }
+    
+  </script>
 </head>
 
 <body>
@@ -20,6 +83,29 @@
     </div>
     <div id="connectedContainer" style="display:none;">
       <div id="teamDiv"></div>
+      <table border="1" >
+        <tr>
+          <td>
+          <td style="color:blue;">Blue</td>
+          <td style="color:green;">Green</td>
+        </tr>
+        <tr>
+          <td>Score</td>
+          <td><button onclick="adjustScore('blue', -1);">-</button><span id="blue-score" style="width:100px;display:inline-block;text-align:center;">0</span><button onclick="adjustScore('blue', 1);">+</button></td>
+          <td><button onclick="adjustScore('green', -1);">-</button><span id="green-score" style="width:100px;display:inline-block;text-align:center;">0</span><button onclick="adjustScore('green', 1);">+</button></td>
+        </tr>
+        <tr>
+          <td colspan="3" ><marquee id="info-marquee" loop="1"  onmouseover="startMarquee(this)" >Click a name to start a new round</marquee></td>
+        </tr>
+        <tr>
+          <td>Peeps</td>
+          <td id="bluePeeps"></td>
+          <td class="green-team-members" id="greenPeeps"></td>
+        </tr>
+      </table>
+      <div>
+        <input id="username" /> <button onclick="adjustUsername()">update your username</button>
+      </div>
         <div><label for="showGreen"><input id="showGreen" name="shownTeam" type="radio" value="green" checked >Show Green</label></div>
         <div><label for="showBlue"><input id="showBlue" name="shownTeam" type="radio" value="blue" >Show Blue</label></div>
     </div>
@@ -30,15 +116,37 @@
   <canvas id="canvas" width="768" height="576" style="background:#595959">
     This text is displayed if your browser does not support HTML5 Canvas.
   </canvas>
+  <div style="height:40px;">
+    <button onclick="reveal()" id="reveal" style="display:none;"  >Reveal!</button>
+  </div>
+
   <form>
     <label for="leftItem">Left option</label><br>
     <input type="text" id="leftItem" name="leftItem" value="Bad use of time during pandemic"><br>
     <label for="rightItem">Right option</label><br>
     <input type="text" id="rightItem" name="rightItem" value="Good use of time during pandemic"><br>
   </form>
+  <button id="update-cards" onclick="updateCards();">Update Cards</button><br>
   <button id="reroll">Reroll Target</button><br>
   <button id="hideToggle">Toggle Target Hidden</button><br><br>
   <p>Use the left and right arrow keys to move the guess line.</p>
+
+  <script>
+    var animals = [
+"aardvark","aerie","albatross","alligator","alpaca","anopheline","anserine","ant","anteater","antelope","antilopine","ape","arachnoid","armadillo","baboon","baby","bacon","badger","badling","ball","band","barracuda","bat","batrachian","bear","beaver","bee","bike","binturong","bird","bison","blackback","bluebird","boar","bobcat","boil","bouquet","bovine","brace","brood","bubaline","buck","buckling","buffalo","bull","butterfly","cabrito","calf","camel","cameline","canine","capeshark","capon","capybara","caracal","caribou","cassowary","cat","caterpillar","cattle","cauldron","celebration","cetaceous","chameleon","chamois","chantelle","cheetah","chevron","chick","chicken","child","chimpanzee","chinchilla","chough","chrysalis","clattering","cloud","cluster","clutch","clutter","coati","cobra","cockerel","cockroach","cod","coffle","cohort","colony","colt","convergence","cormorant","cosset","cote","cougar","cow","cowardice","coyote","crab","crane","crash","cricket","crocodile","crow","crowd","cry","cub","cuckoo","curlew","dam","deer","delegation","desert","dingo","dinosaur","doe","doeling","dog","dogfish","dole","dolphin","donkey","donkey","dove","down","dragonfly","drake","dray","drift","drove","duck","dugong","dule","dunlin","eagle","echidna","eel","eland","elaphine","elapine","elephant","elephant seal","elk","elver","emu","ephyra","erst","falcon","family","farrow","fawn","ferret","field","filly","finch","fingerling","fish","flake","flamingo","flapper","fledgling","flick","flight","float","flock","fluther","flutter","fly","foal","fold","fox","frog","froglet","fuliguline","gadine","gaggle","gam","gang","gaur","gaurine","gazelle","gecko","gelding","gentleman","gerbil","giant panda","gib","gilt","giraffe","girl","glaring","glean","gnat","gnu","goat","goldfinch","goosander","goose","gorilla","goshawk","grasshopper","grist","grouse","guanaco","guinea fowl","guinea pig","gull","ham","hamster","hare","harras","hart","hatchling","hawk","hedgehog","hen","herd","hermit crab","heron","herring","hind","hippopotamus","hippotigrine","hive","hoatzin","hog, barrow","hogget","hoopoe","horde","hornet","horse","host","hub","huddle","human","humble","hummingbird","husk","huss","hyena","ibex","ibis","iguana","impala","implausibility","in flight","infant","jack","jackal","jaguar","jay","jellyfish","jenny","jerboa","jill","jimmy","juvenile","kahada","kangaroo","kennel","kettle","kindle","king","kingfisher","kinkajou","kit","kitten","koala","komodo dragon","kookaburra","kouprey","kudu","lady","lambkin","lamentation","lapwing","lark","larva","leap","leash","lemur","leopard","lepe","lepidopteran","leporine","lion","litter","lizard","llama","lobster","locust","loris","louse","lutrine","lynx","lyrebird","macaque","macaw","magpie","mallard","mammoth","manatee","mandrill","marmoset","marmot","meerkat","memory","mink","mischief","mob","mole","mongoose","monkey","moose","mosquito","mouse","murmuration","mute","mutton","myna","myrmicine","narwhal","neonate","nest","nestling","newt","nide","nightingale","noctillionine","nursery","nye","obstinancy","octopus","okapi","on water","ophidian","opossum","orangutan","oryx","ostrich","otter","ovine","owl","owlet","oyster","pace","pack","paddling","panda","panther","parliament","parrot","partridge","party","peachick","peafowl","peep","pelican","penguin","pheasant","pierine","pig","pigeon","piglet","pika","pillow","piteousness","pitying","plump","pod","polar bear","polyp","pony","porcupine","porpoise","pounce","prairie dog","proboscidean","proboscine","pug","pullet","pup","pupa","pupae","puppy","pussy","quail","queen","quelea","quetzal","rabbit","rabble","raccoon","raft","rag","ram","rangale","rat","raven","red deer","red panda","reindeer","reynard","rhea","rhinoceros","rigg","rock salmon","roo","rook","rookery","rout","safe","salamander","salamandrine","salmon","sand dollar","sandpiper","sardine","sawt","school","scold","sea lion","seahorse","seal","sedge","sege","serpentine","shaglet","shark","she-bear","she-wolf","sheep","shoal","shrew","shrewdness","siamang","siege","singular","sire","sirenian","skein","skulk","skunk","slither","sloth","sloth","smack","smuth","snail","snake","sneak","soldier","sord","sore","sounder","sow","spider","squaloid","squeaker","squid","squirrel","staff","stag","stand","starling","stegosaurus","streak","string","struthious","stud","suilline","suit","swan","swarm","tadpole","tamarin","tapir","tarsier","taurine","team","tercel","termite","terzel","thunder","tiger","toad","toadlet","tom","toucan","tower","train","tribe","trip","trippe","trochilidine","troop","tumbler","turaco","turkey","turtle","tuxedo","umbrellabird","vaccine","veal","vicuña","vinegaroon","viper","viperine","vituline","vulture","waddling","walk","wallaby","walrus","wasp","water buffalo","waxwing","weasel","wedge","wether","whale","whelp","whoop","wobbegong","wolf","wolverine","wombat","woodpecker","worker","worm","wrack","wren","wriggler","yak","yoke","yoyo","zebra"
+    ];
+
+    var adjectives = [
+"Adorable","Adventurous","Aggressive","Agreeable","Alert","Alive","Amused","Angry","Annoyed","Annoying","Anxious","Arrogant","Ashamed","Attractive","Average","Awful","Bad","Beautiful","Better","Bewildered","Black","Blue","Blushing","Bored","Brainy","Brave","Breakable","Bright","Busy","Calm","Careful","Cautious","Charming","Cheerful","Clean","Clear","Clever","Cloudy","Clumsy","Colorful","Combative","Comfortable","Concerned","Condemned","Confused","Cooperative","Courageous","Crazy","Creepy","Crowded","Cruel","Curious","Cute","Dangerous","Dark","Dead","Defeated","Defiant","Delightful","Depressed","Determined","Different","Difficult","Disgusted","Distinct","Disturbed","Dizzy","Doubtful","Drab","Dull","Eager","Easy","Elated","Elegant","Embarrassed","Enchanting","Encouraging","Energetic","Enthusiastic","Envious","Evil","Excited","Expensive","Exuberant","Fair","Faithful","Famous","Fancy","Fantastic","Fierce","Filthy","Fine","Foolish","Fragile","Frail","Frantic","Friendly","Frightened","Funny","Gentle","Gifted","Glamorous","Gleaming","Glorious","Good","Gorgeous","Graceful","Grieving","Grotesque","Grumpy","Handsome","Happy","Healthy","Helpful","Helpless","Hilarious","Homeless","Homely","Horrible","Hungry","Hurt","Ill","Important","Impossible","Inexpensive","Innocent","Inquisitive","Itchy","Jealous","Jittery","Jolly","Joyous","Kind","Lazy","Light","Lively","Lonely","Long","Lovely","Lucky","Magnificent","Misty","Modern","Motionless","Muddy","Mushy","Mysterious","Nasty","Naughty","Nervous","Nice","Nutty","Obedient","Obnoxious","Odd","Old-fashioned","Open","Outrageous","Outstanding","Panicky","Perfect","Plain","Pleasant","Poised","Poor","Powerful","Precious","Prickly","Proud","Putrid","Puzzled","Quaint","Real","Relieved","Repulsive","Rich","Scary","Selfish","Shiny","Shy","Silly","Sleepy","Smiling","Smoggy","Sore","Sparkling","Splendid","Spotless","Stormy","Strange","Successful","Super","Talented","Tame","Tasty","Tender","Tense","Terrible","Thankful","Thoughtful","Thoughtless","Tired","Tough","Troubled","Ugliest","Ugly","Uninterested","Unsightly","Unusual","Upset","Uptight","Vast","Victorious","Vivacious","Wandering","Weary","Wicked","Wide-eyed","Wild","Witty","Worried","Worrisome","Wrong","Zany","Zealous"
+    ];
+
+
+
+    function randomElement(arr){ return arr[Math.floor(Math.random() * arr.length)];}
+
+  </script>
+
+
 
   <script>
 var canvas = document.getElementById('canvas');
@@ -48,7 +156,7 @@ var context = canvas.getContext("2d");
 window.addEventListener("keydown", handleInput, false);
 
 var sendGuess = function(guess){};
-var networkData;
+var allPeeps;
 
 // support retina
 function updateContentScale(canvas){
@@ -244,18 +352,19 @@ function drawBoard(ctx, w, h, option1, option2, answerNormalized, guessNormalize
   drawGuess(guessNormalized, "#ff2a00");
 
 
-  if ( networkData ){
+  if ( allPeeps ){
     var teamShown = document.getElementById("showGreen").checked ? "green" : "blue";
 
     var now = new Date().getTime();
-    for (var key in networkData){
-      var userData = networkData[key];
+    for (var key in allPeeps){
+      var userData = allPeeps[key];
 
-      if ( (now - userData.ts ) > 120000){
-        delete networkData[key];
-        console.log("deleting " + key);
-        continue;
-      }
+      // timeout after 10 minutes
+      // if ( (now - userData.ts ) > (10 * 60 * 1000)){
+      //   delete allPeeps[key];
+      //   console.log("deleting " + key);
+      //   continue;
+      // }
 
       if ( teamShown == userData.team && userData.currGuess ){
         drawGuess( userData.currGuess, teamShown);
@@ -431,7 +540,7 @@ function roundRect(ctx, color, x, y, width, height, radius) {
 
     var uid = uuidv4();
     var userData;
-    var ws, networkData;
+    var ws, allPeeps;
     var connectGreenButton = $("connectGreenButton");
     var connectBlueButton = $("connectBlueButton");
 
@@ -464,42 +573,270 @@ function roundRect(ctx, color, x, y, width, height, radius) {
 
     function sendGuess(guess){
       if ( ws ){
-        var data = Object.assign({}, userData, { currGuess: guess} );
+        var data = Object.assign({}, 
+                                 userData, 
+                                 { 
+                                   currGuess: guess,
+                                   type: 'userUpdate'
+                                 });
         ws.send(JSON.stringify(data));
       }
     }
 
+    function genUsername(){
+      return randomElement(adjectives) + ' ' + randomElement(animals);
+    }
+
+    function updatePeepsTeam(team){
+      var container = document.getElementById(team + 'Peeps');
+      
+      var peeps = [];
+      for ( var uid in allPeeps ){
+        var peep = allPeeps[uid];
+        if ( peep.team == team ){
+          peeps.push(peep);
+        }
+      }
+
+      peeps.sort(function(a, b) {
+        var nameA = a.username.toLowerCase(); // ignore upper and lowercase
+        var nameB = b.username.toLowerCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      });
+
+      for ( var i = 0; i < peeps.length; i ++){
+        var peep = peeps[i];
+        var node;
+        if ( i < container.children.length ){
+          node = container.children[i];
+        }else{
+          node = document.createElement("div");
+          node.addEventListener('mousedown', function(e){
+            if ( ws ){
+              console.log(allPeeps);
+              var targetuid = e.target.getAttribute("data-uid");
+              console.log(targetuid);
+              var peep = allPeeps[targetuid];
+              var msg = Object.assign({}, {
+                type: 'startRound',
+                peep: peep
+              });
+              startRound(msg);
+              ws.send(JSON.stringify(msg));
+            }      
+            
+          });
+
+        }
+
+        if ( peep == userData ){
+          node.textContent = peep.username +  '(Me)';
+        }else{
+          node.textContent = peep.username;
+        }
+        node.setAttribute("data-uid", peep.uid);
+
+        if ( peep.uid == scores.turn ){
+          node.style.color = "black";
+          node.style.cursor = null;
+        }else{
+          node.style.color = peep.team;
+          node.style.cursor = "pointer";          
+        }
+
+
+
+        if ( ! node.parentElement ) container.appendChild(node);
+
+      }
+
+      var childCount = container.children.length;
+      for ( var i = peeps.length ; i < childCount; i ++){
+        container.removeChild(container.lastChild);
+      }
+
+    }
+
+    function updatePeeps(){
+      updatePeepsTeam('green');
+      updatePeepsTeam('blue');
+    }
+
+    function updateScores(){
+      $('blue-score').textContent = scores.blue;
+      $('green-score').textContent = scores.green;
+      
+    }
+
+    function startRound(msg){
+      var peep = msg.peep;
+      scores.turn = peep.uid;
+
+      if ( peep.uid == userData.uid ){
+        currTarget = Math.random();
+        hide = false;
+
+        var revealButton = $('reveal');
+        $('reveal').classList.remove('disabled');
+
+        revealButton.style.display=null;
+        var leftMargin = canvas.clientWidth/2 - revealButton.clientWidth/2;
+        revealButton.style.marginLeft= leftMargin + "px";
+
+        
+        redraw();
+      }else{
+        hide = true;
+        currGuess = 0.5;
+        $('reveal').style.display="none";
+        redraw();
+      }
+
+      var isGreenRound = (peep.team == "green");
+      if ( peep.team == "green"){
+        $('showGreen').checked = true;
+      }else{
+        $('showBlue').checked = true;
+      }
+
+      updatePeeps();
+      
+    }
+
+    function updateCards(){
+      if ( ws ){
+        var data = Object.assign({}, {
+          type: 'updateCards',
+          left: $('leftItem').value,
+          right: $('rightItem').value
+        });
+        ws.send(JSON.stringify(data));
+      }      
+    }
+
+    function adjustUsername(){
+      var username = $('username').value;
+      if ( userData && username){
+        userData.username =  username;
+        updatePeeps();
+        sendGuess(currGuess);
+      }
+    }
+
+    function reveal(){
+      if ( ws ){
+        var data = Object.assign({}, {
+          type: 'reveal',
+          target: currTarget
+        });
+        ws.send(JSON.stringify(data));
+        $('reveal').classList.add('disabled');
+      }
+    }
+
+    function adjustScore(team, delta){
+      scores[team] = Math.max(0, delta + scores[team]);
+      
+      updateScores();
+      if ( ws ){
+        var data = Object.assign({}, {
+          type: 'updateScore',
+          team: team,
+          score: scores[team]
+        });
+        ws.send(JSON.stringify(data));
+      }      
+    }
 
     function connect(team){
       userData = {
         uid: uid,
-        team: team
+        team: team,
+        username: (userData && userData.username) ? userData.username : genUsername()
       }
-      networkData = {};
+      allPeeps = {};
+      allPeeps[uid] = userData;
+      scores = {green: 0, blue: 0, turn: null};
 
-      ws = new WebSocket(relativePath("ws"));
+      ws = new WebSocket(relativePath("/ws"));
       setConnectStatus("connecting..");
+
+
 
       ws.onopen = function (event) {
 
         $("teamDiv").textContent = "You are on team " + team + ".";
         $("teamDiv").style.color = team;
+
+        $('username').value = userData.username;
         
+        sendGuess(currGuess);
+
         notConnectedContainer.style.display = "none";
         connectedContainer.style.display = null;
 
-        
+        var marquee = $('info-marquee');
+        startMarquee(marquee);        
         
         console.log("connected.");
         setConnectStatus("connected");
-        
-      };
-      ws.onmessage = function (event) {
-        var data = JSON.parse(event.data);
 
-        data.ts = new Date().getTime();
-        networkData[data.uid] = data;
-        redraw();
+        updatePeeps();
+      };
+        
+      ws.onmessage = function (event) {
+        var msg = JSON.parse(event.data);
+
+        switch (msg.type){
+
+        case 'userUpdate':
+          
+          msg.ts = new Date().getTime();
+          allPeeps[msg.uid] = msg;
+          redraw();
+          updatePeeps();
+
+          break;
+
+
+        case 'updateCards':
+          $('leftItem').value = msg.left;
+          $('rightItem').value = msg.right;
+          redraw();
+          break;
+
+        case 'startRound':
+          startRound(msg);
+
+          break;
+
+        case 'reveal':
+          hide = false;
+          currTarget = msg.target;
+
+          redraw();
+          break;
+
+        case 'updateScore':
+          
+          scores[msg.team] = msg.score;
+          updateScores();
+          break;
+
+        case 'userLeft':
+          delete allPeeps[msg.uid];
+          updatePeeps();
+          break;
+
+        }
 
       }
       ws.onclose = function (event){
@@ -509,9 +846,10 @@ function roundRect(ctx, color, x, y, width, height, radius) {
         notConnectedContainer.style.display = null;
         connectedContainer.style.display = "none";
 
-        networkData = null;
+        allPeeps = null;
+        ws = null;
+        scores = null;
 
-        console.log(event);
       }
       
     }

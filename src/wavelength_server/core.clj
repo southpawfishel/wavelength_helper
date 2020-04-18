@@ -19,29 +19,76 @@
 
 (def connected (atom #{}))
 
+(def server-state (atom {}))
 
 (defn comm-handler [ring-request]
-  ;; unified API for WebSocket and HTTP long polling/streaming
-  (with-channel ring-request channel    ; get the channel
-    (swap! connected conj channel)
-    (on-receive channel (fn [data]      ; two way communication
+  (let [room (-> ring-request :params :room)]
+    ;; unified API for WebSocket and HTTP long polling/streaming
+    (with-channel ring-request channel  ; get the channel
+      ;; (swap! connected conj channel)
+      (swap! server-state update-in [room :connected] (fn [connected]
+                                                        (conj (or connected #{})
+                                                              channel)))
 
-                          (doseq [ch @connected
-                                  :when (not= ch channel)]
-                            (try
-                              (send! ch data)
-                              (catch Exception e)))))
-    (on-close channel (fn [status]
-                        (swap! connected disj channel)))))
+      ;; send current users
+      (doseq [user (-> @server-state
+                       (get room)
+                       (get :users)
+                       vals)]
+        (send! channel (json/write-str user)))
+
+      ;; startround
+      (send! channel
+             (json/write-str (-> @server-state (get room) :round)))
+
+      ;; update score
+      (send! channel
+             (json/write-str (-> @server-state (get room) :score)))
+      
+      (on-receive channel (fn [data]
+                            (doseq [ch (-> @server-state (get room) :connected )
+                                    :when (not= ch channel)]
+                              (try
+                                (send! ch data)
+                                (catch Exception e)))
+
+                            (let [msg (json/read-str data)]
+                              (case (get msg "type")
+                                "userUpdate"
+                                (swap! server-state assoc-in [room :users channel] msg)
+
+                                "updateCards"
+                                (swap! server-state assoc-in [room :cards] msg)
+
+                                "startRound"
+                                (swap! server-state assoc-in [room :round] msg)
+
+                                "updateScore"
+                                (swap! server-state assoc-in [room :score] msg)
+
+                                ;; else
+                                nil))
+                            ))
+      (on-close channel (fn [status]
+                          (when-let [uid (-> @server-state (get room) :users (get channel) (get "uid"))]
+                            (doseq [ch (-> @server-state (get room) :connected )]
+                              (try
+                                (send! ch (json/write-str {"type"  "userLeft"
+                                                           "uid" uid}))
+                                (catch Exception e))))
+
+                          (swap! server-state update-in [room :connected] disj channel)
+                          (swap! server-state update-in [room :users] dissoc channel))))))
 
 
 
 (def my-routes
   (routes
-   (GET "/ws" [] comm-handler)
-   (GET "/index.html" [] (response/resource-response "index.html" {:root "public"}))
-   (GET "/" [] (response/resource-response "index.html" {:root "public"}))
-   (GET "/foo" [] "Hello Foo")
+   (GET "/:room{[a-zA-Z0-9.\\-]+}/ws" [] comm-handler)
+   ;; (GET "/index.html" [] (response/resource-response "index.html" {:root "public"}))
+   ;; (GET "/" [] (response/resource-response "index.html" {:root "public"}))
+   (GET "/" [] "You need to specify a room. Try http://wavelength.smith.rocks/roomName")
+   (GET "/:room{[a-zA-Z0-9.\\-]+}" [] (response/resource-response "index.html" {:root "public"}))
    (GET "/bar" [] "Hello Bar")
    (route/not-found "Not Found2"))
   )
