@@ -17,8 +17,6 @@
   
   (:gen-class))
 
-(def connected (atom #{}))
-
 (def server-state (atom {}))
 
 (defn comm-handler [ring-request]
