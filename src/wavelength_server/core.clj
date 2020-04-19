@@ -101,5 +101,5 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (def server (run-server #'my-routes {:port 8080}))
+  (def server (run-server #'my-routes {:port 80}))
   )
