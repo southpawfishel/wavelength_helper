@@ -170,6 +170,7 @@
 
     var sendGuess = function (guess) { };
     var allPeeps;
+    var myTurn = false;
 
     // support retina
     function updateContentScale(canvas) {
@@ -268,6 +269,11 @@
 
     function clickToGuess(event) {
 
+      if (myTurn === true) {
+        redraw();
+        return;
+      }
+
       let rect = event.target.getBoundingClientRect();
 
       var cx, cy;
@@ -341,13 +347,7 @@
         ctx.fill();
       }
 
-      // Guess knob
-      ctx.fillStyle = "#ff2a00";
-      ctx.beginPath();
-      ctx.arc(circleX, circleY, w * 0.1, Math.PI, 2 * Math.PI);
-      ctx.fill();
-
-      // Guess line
+      // Helper method to draw guess line
       function drawGuess(guessNormalized, color, name) {
         let guessLen = w * 0.4;
         let range = Math.PI;
@@ -375,7 +375,18 @@
           text(ctx, color, textCenterX, textCenterY, name);
         }
       }
-      drawGuess(guessNormalized, "#ff2a00", null);
+
+      // Don't show guess line or knob if its your turn
+      if (myTurn === false) {
+        // Guess knob
+        ctx.fillStyle = "#ff2a00";
+        ctx.beginPath();
+        ctx.arc(circleX, circleY, w * 0.1, Math.PI, 2 * Math.PI);
+        ctx.fill();
+
+        // Guess line
+        drawGuess(guessNormalized, "#ff2a00", null);
+      }
 
 
       if (allPeeps) {
@@ -392,12 +403,12 @@
           //   continue;
           // }
 
-          if (teamShown == userData.team && userData.currGuess) {
+          var isClueGiver = (userData.uid == scores.turn);
+          if (teamShown == userData.team && userData.hasOwnProperty('currGuess') && !isClueGiver) {
             drawGuess(userData.currGuess, teamShown, userData.username);
           }
         }
       }
-
 
       // Spectrum
       let spectrumItemWidth = w * 0.34;
@@ -567,6 +578,7 @@
     var uid = uuidv4();
     var userData;
     var ws, allPeeps;
+    var myTurn = false;
     var connectGreenButton = $("connectGreenButton");
     var connectBlueButton = $("connectBlueButton");
 
@@ -657,6 +669,7 @@
               });
               startRound(msg);
               ws.send(JSON.stringify(msg));
+              redraw();
             }
 
           });
@@ -678,10 +691,15 @@
           node.style.cursor = "pointer";
         }
 
-
-
         if (!node.parentElement) container.appendChild(node);
 
+      }
+
+      // Make note of if it's our turn or not
+      if (userData.uid == scores.turn) {
+        myTurn = true;
+      } else {
+        myTurn = false;
       }
 
       var childCount = container.children.length;
@@ -716,14 +734,10 @@
         revealButton.style.display = null;
         var leftMargin = canvas.clientWidth / 2 - revealButton.clientWidth / 2;
         revealButton.style.marginLeft = leftMargin + "px";
-
-
-        redraw();
       } else {
         hide = true;
         currGuess = 0.5;
         $('reveal').style.display = "none";
-        redraw();
       }
 
       if (peep.team == "green") {
@@ -733,6 +747,7 @@
       }
 
       updatePeeps();
+      redraw();
 
     }
 
@@ -846,6 +861,7 @@
 
           case 'startRound':
             startRound(msg);
+            redraw();
 
             break;
 
@@ -860,11 +876,13 @@
 
             scores[msg.team] = msg.score;
             updateScores();
+            redraw();
             break;
 
           case 'userLeft':
             delete allPeeps[msg.uid];
             updatePeeps();
+            redraw();
             break;
 
         }
