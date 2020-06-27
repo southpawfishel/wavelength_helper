@@ -1,6 +1,7 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
 
@@ -11,71 +12,75 @@
   <meta name="viewport" content="width=device-width">
   <style>
     table {
-        border-collapse: collapse;
+      border-collapse: collapse;
     }
 
-    table, th, td {
-        border: 1px solid rgb(196,196,196);
+    table,
+    th,
+    td {
+      border: 1px solid rgb(196, 196, 196);
     }
 
-    #greenPeeps  {
-        color: green;
-        cursor: pointer;
-        text-align: center;
+    #greenPeeps {
+      color: green;
+      cursor: pointer;
+      text-align: center;
     }
-    #bluePeeps  {
-        color: blue;
-        cursor: pointer;
-        text-align: center;
+
+    #bluePeeps {
+      color: blue;
+      cursor: pointer;
+      text-align: center;
     }
 
     #reveal.disabled {
-        background-color: #6c757d;
-        border-color: #6c757d;
+      background-color: #6c757d;
+      border-color: #6c757d;
     }
 
     #reveal {
-        background-color: #dc3545;
-        border-color: #dc3545;
-        border-radius: .25rem;
-        border: 1px solid transparent;
-        color: #fff;
-        cursor: pointer;
-        display: inline-block;
-        font-size: 1rem;
-        font-weight: 400;
-        line-height: 1.5;
-        padding: .375rem .75rem;
-        text-align: center;
-        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-        user-select: none;
-        vertical-align: middle;
-        white-space: nowrap;
+      background-color: #dc3545;
+      border-color: #dc3545;
+      border-radius: .25rem;
+      border: 1px solid transparent;
+      color: #fff;
+      cursor: pointer;
+      display: inline-block;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      padding: .375rem .75rem;
+      text-align: center;
+      transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+      user-select: none;
+      vertical-align: middle;
+      white-space: nowrap;
     }
-
   </style>
   <script>
     var isMarqueeScrolling = false;
-    function startMarquee(m){
+    function startMarquee(m) {
       if (isMarqueeScrolling) return;
 
       m.start();
       isMarqueeScrolling = true;
 
       var scrollWidth = m.clientWidth + context.measureText(m.textContent).width;
-      var scrollTime = scrollWidth /(m.scrollAmount / m.scrollDelay  );
-      setTimeout(function(){
+      var scrollTime = scrollWidth / (m.scrollAmount / m.scrollDelay);
+      setTimeout(function () {
         isMarqueeScrolling = false;
         m.loop += 1;
-      },scrollTime);
-      
+      }, scrollTime);
+
     }
-    
+
   </script>
 </head>
 
 <body>
-  <h2>I did not create the board game Wavelength. I just really enjoy playing it. <a href="https://www.wavelength.zone/">Please visit the official site</a> and buy a physical copy to support the developers!</h2><br><br>
+  <h2>I did not create the board game Wavelength. I just really enjoy playing it. <a
+      href="https://www.wavelength.zone/">Please visit the official site</a> and buy a physical copy to support the
+    developers!</h2><br><br>
   <div>
     <div id="notConnectedContainer">
       <button id="connectBlueButton" style="border-color: blue;">Connect Blue</button>
@@ -83,7 +88,7 @@
     </div>
     <div id="connectedContainer" style="display:none;">
       <div id="teamDiv"></div>
-      <table border="1" >
+      <table border="1">
         <tr>
           <td>
           <td style="color:blue;">Blue</td>
@@ -91,11 +96,18 @@
         </tr>
         <tr>
           <td>Score</td>
-          <td><button onclick="adjustScore('blue', -1);">-</button><span id="blue-score" style="width:100px;display:inline-block;text-align:center;">0</span><button onclick="adjustScore('blue', 1);">+</button></td>
-          <td><button onclick="adjustScore('green', -1);">-</button><span id="green-score" style="width:100px;display:inline-block;text-align:center;">0</span><button onclick="adjustScore('green', 1);">+</button></td>
+          <td><button onclick="adjustScore('blue', -1);">-</button><span id="blue-score"
+              style="width:100px;display:inline-block;text-align:center;">0</span><button
+              onclick="adjustScore('blue', 1);">+</button></td>
+          <td><button onclick="adjustScore('green', -1);">-</button><span id="green-score"
+              style="width:100px;display:inline-block;text-align:center;">0</span><button
+              onclick="adjustScore('green', 1);">+</button></td>
         </tr>
         <tr>
-          <td colspan="3" ><marquee id="info-marquee" loop="1"  onmouseover="startMarquee(this)" >Click a name to start a new round</marquee></td>
+          <td colspan="3">
+            <marquee id="info-marquee" loop="1" onmouseover="startMarquee(this)">Click a name to start a new round
+            </marquee>
+          </td>
         </tr>
         <tr>
           <td>Peeps</td>
@@ -106,18 +118,19 @@
       <div>
         <input id="username" /> <button onclick="adjustUsername()">update your username</button>
       </div>
-        <div><label for="showGreen"><input id="showGreen" name="shownTeam" type="radio" value="green" checked >Show Green</label></div>
-        <div><label for="showBlue"><input id="showBlue" name="shownTeam" type="radio" value="blue" >Show Blue</label></div>
+      <div><label for="showGreen"><input id="showGreen" name="shownTeam" type="radio" value="green" checked>Show
+          Green</label></div>
+      <div><label for="showBlue"><input id="showBlue" name="shownTeam" type="radio" value="blue">Show Blue</label></div>
     </div>
     <div id="connectStatusContainer">
       You are <span id="connectStatus">not connected</span>.
     </div>
-    </div>
+  </div>
   <canvas id="canvas" width="768" height="576" style="background:#595959">
     This text is displayed if your browser does not support HTML5 Canvas.
   </canvas>
   <div style="height:40px;">
-    <button onclick="reveal()" id="reveal" style="display:none;"  >Reveal!</button>
+    <button onclick="reveal()" id="reveal" style="display:none;">Reveal!</button>
   </div>
 
   <form>
@@ -133,396 +146,409 @@
 
   <script>
     var animals = [
-"aardvark","albatross","alligator","alpaca","ant","anteater","antelope","antilopine","ape","arachnoid","armadillo","baboon","badger","barracuda","bat","bear","beaver","bee","bird","bison","bluebird","boar","bobcat","bovine","buck","buffalo","bull","butterfly","calf","camel","canine","capeshark","capybara","caracal","caribou","cassowary","cat","caterpillar","cattle","chameleon","chamois","cheetah","chick","chicken","chimpanzee","chinchilla","cobra","cockerel","cockroach","cod","colt","cougar","cow","coyote","crab","crane","cricket","crocodile","crow","cub","cuckoo","curlew","deer","dingo","dinosaur","doe","doeling","dog","dogfish","dole","dolphin","donkey","dove","dragonfly","drake","duck","dugong","dunlin","eagle","echidna","eel","eland","elephant","elephant seal","elk","emu","falcon","farrow","fawn","ferret","finch","fish","flamingo","flapper","fledgling","foal","fox","frog","froglet","gazelle","gecko","gerbil","giant panda","giraffe","gnat","gnu","goat","goldfinch","goosander","goose","gorilla","goshawk","grasshopper","grouse","guanaco","guinea fowl","guinea pig","gull","ham","hamster","hare","harras","hart","hatchling","hawk","hedgehog","hen","herd","hermit crab","heron","herring","hippopotamus","hive","hog, barrow","hogget","hoopoe","hornet","horse","hummingbird","hyena","ibex","ibis","iguana","impala","jackal","jaguar","jay","jellyfish","kangaroo","kingfisher","kinkajou","kit","kitten","koala","komodo dragon","kookaburra","kouprey","kudu","lady","lapwing","lark","larva","lemur","leopard","lepe","lepidopteran","leporine","lion","lizard","llama","lobster","locust","loris","louse","lynx","lyrebird","macaque","macaw","magpie","mallard","mammoth","manatee","mandrill","marmoset","marmot","meerkat","mink","mole","mongoose","monkey","moose","mosquito","mouse","mutton","myna","myrmicine","narwhal","newt","nightingale","octopus","opossum","orangutan","oryx","ostrich","otter","owl","owlet","oyster","panda","panther","parrot","partridge","peachick","peafowl","peep","pelican","penguin","pheasant","pig","pigeon","piglet","pika","pillow","pony","porcupine","porpoise","prairie dog","pug","pullet","pup","puppy","quail","rabbit","raccoon","rag","ram","rat","raven","red deer","red panda","reindeer","reynard","rhinoceros","rigg","rock salmon","roo","rook","rookery","rout","salamander","salmon","sand dollar","sandpiper","sardine","sawt","sea lion","seahorse","seal","serpentine","shark","sheep","shoal","shrew","siamang","skunk","sloth","sloth","snail","snake","sneak","sow","spider","squeaker","squid","squirrel","stag","stand","starling","stegosaurus","stud","swan","swarm","tadpole","tamarin","tapir","tarsier","termite","thunder","tiger","toad","toadlet","toucan","turkey","turtle","umbrellabird","viper","vulture","wallaby","walrus","wasp","water buffalo","weasel","whale","whelp","wolf","wolverine","wombat","woodpecker","worm","wren","yak","zebra"
+      "aardvark", "albatross", "alligator", "alpaca", "ant", "anteater", "antelope", "antilopine", "ape", "arachnoid", "armadillo", "baboon", "badger", "barracuda", "bat", "bear", "beaver", "bee", "bird", "bison", "bluebird", "boar", "bobcat", "bovine", "buck", "buffalo", "bull", "butterfly", "calf", "camel", "canine", "capeshark", "capybara", "caracal", "caribou", "cassowary", "cat", "caterpillar", "cattle", "chameleon", "chamois", "cheetah", "chick", "chicken", "chimpanzee", "chinchilla", "cobra", "cockerel", "cockroach", "cod", "colt", "cougar", "cow", "coyote", "crab", "crane", "cricket", "crocodile", "crow", "cub", "cuckoo", "curlew", "deer", "dingo", "dinosaur", "doe", "doeling", "dog", "dogfish", "dole", "dolphin", "donkey", "dove", "dragonfly", "drake", "duck", "dugong", "dunlin", "eagle", "echidna", "eel", "eland", "elephant", "elephant seal", "elk", "emu", "falcon", "farrow", "fawn", "ferret", "finch", "fish", "flamingo", "flapper", "fledgling", "foal", "fox", "frog", "froglet", "gazelle", "gecko", "gerbil", "giant panda", "giraffe", "gnat", "gnu", "goat", "goldfinch", "goosander", "goose", "gorilla", "goshawk", "grasshopper", "grouse", "guanaco", "guinea fowl", "guinea pig", "gull", "ham", "hamster", "hare", "harras", "hart", "hatchling", "hawk", "hedgehog", "hen", "herd", "hermit crab", "heron", "herring", "hippopotamus", "hive", "hog, barrow", "hogget", "hoopoe", "hornet", "horse", "hummingbird", "hyena", "ibex", "ibis", "iguana", "impala", "jackal", "jaguar", "jay", "jellyfish", "kangaroo", "kingfisher", "kinkajou", "kit", "kitten", "koala", "komodo dragon", "kookaburra", "kouprey", "kudu", "lady", "lapwing", "lark", "larva", "lemur", "leopard", "lepe", "lepidopteran", "leporine", "lion", "lizard", "llama", "lobster", "locust", "loris", "louse", "lynx", "lyrebird", "macaque", "macaw", "magpie", "mallard", "mammoth", "manatee", "mandrill", "marmoset", "marmot", "meerkat", "mink", "mole", "mongoose", "monkey", "moose", "mosquito", "mouse", "mutton", "myna", "myrmicine", "narwhal", "newt", "nightingale", "octopus", "opossum", "orangutan", "oryx", "ostrich", "otter", "owl", "owlet", "oyster", "panda", "panther", "parrot", "partridge", "peachick", "peafowl", "peep", "pelican", "penguin", "pheasant", "pig", "pigeon", "piglet", "pika", "pillow", "pony", "porcupine", "porpoise", "prairie dog", "pug", "pullet", "pup", "puppy", "quail", "rabbit", "raccoon", "rag", "ram", "rat", "raven", "red deer", "red panda", "reindeer", "reynard", "rhinoceros", "rigg", "rock salmon", "roo", "rook", "rookery", "rout", "salamander", "salmon", "sand dollar", "sandpiper", "sardine", "sawt", "sea lion", "seahorse", "seal", "serpentine", "shark", "sheep", "shoal", "shrew", "siamang", "skunk", "sloth", "sloth", "snail", "snake", "sneak", "sow", "spider", "squeaker", "squid", "squirrel", "stag", "stand", "starling", "stegosaurus", "stud", "swan", "swarm", "tadpole", "tamarin", "tapir", "tarsier", "termite", "thunder", "tiger", "toad", "toadlet", "toucan", "turkey", "turtle", "umbrellabird", "viper", "vulture", "wallaby", "walrus", "wasp", "water buffalo", "weasel", "whale", "whelp", "wolf", "wolverine", "wombat", "woodpecker", "worm", "wren", "yak", "zebra"
     ];
 
     var adjectives = [
-"Adorable","Adventurous","Aggressive","Agreeable","Alert","Alive","Amused","Angry","Annoyed","Annoying","Anxious","Arrogant","Ashamed","Attractive","Average","Awful","Bad","Beautiful","Better","Bewildered","Black","Blue","Blushing","Bored","Brainy","Brave","Breakable","Bright","Busy","Calm","Careful","Cautious","Charming","Cheerful","Clean","Clear","Clever","Cloudy","Clumsy","Colorful","Combative","Comfortable","Concerned","Condemned","Confused","Cooperative","Courageous","Crazy","Creepy","Crowded","Cruel","Curious","Cute","Dangerous","Dark","Dead","Defeated","Defiant","Delightful","Depressed","Determined","Different","Difficult","Disgusted","Distinct","Disturbed","Dizzy","Doubtful","Drab","Dull","Eager","Easy","Elated","Elegant","Embarrassed","Enchanting","Encouraging","Energetic","Enthusiastic","Envious","Evil","Excited","Expensive","Exuberant","Fair","Faithful","Famous","Fancy","Fantastic","Fierce","Filthy","Fine","Foolish","Fragile","Frail","Frantic","Friendly","Frightened","Funny","Gentle","Gifted","Glamorous","Gleaming","Glorious","Good","Gorgeous","Graceful","Grieving","Grotesque","Grumpy","Handsome","Happy","Healthy","Helpful","Helpless","Hilarious","Homeless","Homely","Horrible","Hungry","Hurt","Ill","Important","Impossible","Inexpensive","Innocent","Inquisitive","Itchy","Jealous","Jittery","Jolly","Joyous","Kind","Lazy","Light","Lively","Lonely","Long","Lovely","Lucky","Magnificent","Misty","Modern","Motionless","Muddy","Mushy","Mysterious","Nasty","Naughty","Nervous","Nice","Nutty","Obedient","Obnoxious","Odd","Old-fashioned","Open","Outrageous","Outstanding","Panicky","Perfect","Plain","Pleasant","Poised","Poor","Powerful","Precious","Prickly","Proud","Putrid","Puzzled","Quaint","Real","Relieved","Repulsive","Rich","Scary","Selfish","Shiny","Shy","Silly","Sleepy","Smiling","Smoggy","Sore","Sparkling","Splendid","Spotless","Stormy","Strange","Successful","Super","Talented","Tame","Tasty","Tender","Tense","Terrible","Thankful","Thoughtful","Thoughtless","Tired","Tough","Troubled","Ugliest","Ugly","Uninterested","Unsightly","Unusual","Upset","Uptight","Vast","Victorious","Vivacious","Wandering","Weary","Wicked","Wide-eyed","Wild","Witty","Worried","Worrisome","Wrong","Zany","Zealous"
+      "Adorable", "Adventurous", "Aggressive", "Agreeable", "Alert", "Alive", "Amused", "Angry", "Annoyed", "Annoying", "Anxious", "Arrogant", "Ashamed", "Attractive", "Average", "Awful", "Bad", "Beautiful", "Better", "Bewildered", "Black", "Blue", "Blushing", "Bored", "Brainy", "Brave", "Breakable", "Bright", "Busy", "Calm", "Careful", "Cautious", "Charming", "Cheerful", "Clean", "Clear", "Clever", "Cloudy", "Clumsy", "Colorful", "Combative", "Comfortable", "Concerned", "Condemned", "Confused", "Cooperative", "Courageous", "Crazy", "Creepy", "Crowded", "Cruel", "Curious", "Cute", "Dangerous", "Dark", "Dead", "Defeated", "Defiant", "Delightful", "Depressed", "Determined", "Different", "Difficult", "Disgusted", "Distinct", "Disturbed", "Dizzy", "Doubtful", "Drab", "Dull", "Eager", "Easy", "Elated", "Elegant", "Embarrassed", "Enchanting", "Encouraging", "Energetic", "Enthusiastic", "Envious", "Evil", "Excited", "Expensive", "Exuberant", "Fair", "Faithful", "Famous", "Fancy", "Fantastic", "Fierce", "Filthy", "Fine", "Foolish", "Fragile", "Frail", "Frantic", "Friendly", "Frightened", "Funny", "Gentle", "Gifted", "Glamorous", "Gleaming", "Glorious", "Good", "Gorgeous", "Graceful", "Grieving", "Grotesque", "Grumpy", "Handsome", "Happy", "Healthy", "Helpful", "Helpless", "Hilarious", "Homeless", "Homely", "Horrible", "Hungry", "Hurt", "Ill", "Important", "Impossible", "Inexpensive", "Innocent", "Inquisitive", "Itchy", "Jealous", "Jittery", "Jolly", "Joyous", "Kind", "Lazy", "Light", "Lively", "Lonely", "Long", "Lovely", "Lucky", "Magnificent", "Misty", "Modern", "Motionless", "Muddy", "Mushy", "Mysterious", "Nasty", "Naughty", "Nervous", "Nice", "Nutty", "Obedient", "Obnoxious", "Odd", "Old-fashioned", "Open", "Outrageous", "Outstanding", "Panicky", "Perfect", "Plain", "Pleasant", "Poised", "Poor", "Powerful", "Precious", "Prickly", "Proud", "Putrid", "Puzzled", "Quaint", "Real", "Relieved", "Repulsive", "Rich", "Scary", "Selfish", "Shiny", "Shy", "Silly", "Sleepy", "Smiling", "Smoggy", "Sore", "Sparkling", "Splendid", "Spotless", "Stormy", "Strange", "Successful", "Super", "Talented", "Tame", "Tasty", "Tender", "Tense", "Terrible", "Thankful", "Thoughtful", "Thoughtless", "Tired", "Tough", "Troubled", "Ugliest", "Ugly", "Uninterested", "Unsightly", "Unusual", "Upset", "Uptight", "Vast", "Victorious", "Vivacious", "Wandering", "Weary", "Wicked", "Wide-eyed", "Wild", "Witty", "Worried", "Worrisome", "Wrong", "Zany", "Zealous"
     ];
 
 
 
-    function randomElement(arr){ return arr[Math.floor(Math.random() * arr.length)];}
+    function randomElement(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   </script>
 
 
 
   <script>
-var canvas = document.getElementById('canvas');
-var cWidth = canvas.width;
-var cHeight = canvas.height;
-var context = canvas.getContext("2d");
-window.addEventListener("keydown", handleInput, false);
+    var canvas = document.getElementById('canvas');
+    var cWidth = canvas.width;
+    var cHeight = canvas.height;
+    var context = canvas.getContext("2d");
+    window.addEventListener("keydown", handleInput, false);
 
-var sendGuess = function(guess){};
-var allPeeps;
+    var sendGuess = function (guess) { };
+    var allPeeps;
 
-// support retina
-function updateContentScale(canvas){
+    // support retina
+    function updateContentScale(canvas) {
 
-  var contentScale = window.devicePixelRatio;
+      var contentScale = window.devicePixelRatio;
 
-  if ( contentScale != 1){
+      if (contentScale != 1) {
 
-    canvas.style.width = cWidth + "px";
-    canvas.style.height = cHeight + "px";
+        canvas.style.width = cWidth + "px";
+        canvas.style.height = cHeight + "px";
 
-    canvas.width = cWidth * contentScale;
-    canvas.height = cHeight * contentScale;
+        canvas.width = cWidth * contentScale;
+        canvas.height = cHeight * contentScale;
 
-    var ctx = canvas.getContext("2d");
-    ctx.scale(contentScale, contentScale);
-  }
-}
-updateContentScale(canvas);
-
-function onDrag(elem, handler){
-  elem.addEventListener("mousedown", function(){
-    elem.addEventListener("mousemove", handler);
-  });
-  var cleanup = function(){
-    elem.removeEventListener("mousemove", handler);
-  };
-  elem.addEventListener("mouseup", cleanup);
-  elem.addEventListener("mouseleave", cleanup);
-
-  elem.addEventListener("touchstart", function(){
-    elem.addEventListener("touchmove", handler);
-  });
-  var cleanup = function(){
-    elem.removeEventListener("touchmove", handler);
-  };
-  elem.addEventListener("touchend", cleanup);
-}
-canvas.addEventListener("mousedown", clickToGuess, false);
-canvas.addEventListener("touchstart", clickToGuess, false);
-onDrag(canvas, clickToGuess);
-
-var currTarget = Math.random();
-var currGuess = 0.5;
-var hide = false;
-
-var left = document.getElementById('leftItem');
-left.oninput = function() {
-  redraw();
-};
-var right = document.getElementById('rightItem');
-right.oninput = function() {
-  redraw();
-};
-
-var reroll = document.getElementById('reroll');
-reroll.onclick = function() {
-  currTarget = Math.random();
-  redraw();
-};
-
-var hideToggle = document.getElementById('hideToggle');
-hideToggle.onclick = function() {
-  hide = !hide;
-  redraw();
-};
-
-redraw();
-
-function redraw(){
-
-
-    drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
-}
-
-function handleInput(event) {
-  switch (event.keyCode) {
-    case 37:
-      // left key pressed
-      currGuess -= 0.01;
-      if (currGuess <= 0) {
-        currGuess = 0;
+        var ctx = canvas.getContext("2d");
+        ctx.scale(contentScale, contentScale);
       }
+    }
+    updateContentScale(canvas);
+
+    function onDrag(elem, handler) {
+      elem.addEventListener("mousedown", function () {
+        elem.addEventListener("mousemove", handler);
+      });
+      var cleanup = function () {
+        elem.removeEventListener("mousemove", handler);
+      };
+      elem.addEventListener("mouseup", cleanup);
+      elem.addEventListener("mouseleave", cleanup);
+
+      elem.addEventListener("touchstart", function () {
+        elem.addEventListener("touchmove", handler);
+      });
+      var cleanup = function () {
+        elem.removeEventListener("touchmove", handler);
+      };
+      elem.addEventListener("touchend", cleanup);
+    }
+    canvas.addEventListener("mousedown", clickToGuess, false);
+    canvas.addEventListener("touchstart", clickToGuess, false);
+    onDrag(canvas, clickToGuess);
+
+    var currTarget = Math.random();
+    var currGuess = 0.5;
+    var hide = false;
+
+    var left = document.getElementById('leftItem');
+    left.oninput = function () {
       redraw();
-      sendGuess(currGuess);
-      break;
-    case 39:
-      // right key pressed
-      currGuess += 0.01;
-      if (currGuess >= 1) {
-        currGuess = 1;
-      }
+    };
+    var right = document.getElementById('rightItem');
+    right.oninput = function () {
       redraw();
-      sendGuess(currGuess);
-      break;
-  }
-}
+    };
 
-function clickToGuess(event){
+    var reroll = document.getElementById('reroll');
+    reroll.onclick = function () {
+      currTarget = Math.random();
+      redraw();
+    };
 
-  let rect = event.target.getBoundingClientRect();
+    var hideToggle = document.getElementById('hideToggle');
+    hideToggle.onclick = function () {
+      hide = !hide;
+      redraw();
+    };
 
-  var cx,cy;
-  if ( event.targetTouches ){
-    cx = event.targetTouches[0].clientX;
-    cy = event.targetTouches[0].clientY;
+    redraw();
 
-    // prevent scrolling
-    event.preventDefault();
-  }else {
-    cx = event.clientX;
-    cy = event.clientY;
-  }
+    function redraw() {
+      drawBoard(context, cWidth, cHeight, left.value, right.value, currTarget, currGuess, hide);
+    }
 
-  let mx = cx - rect.left;
-  let my = cy - rect.top;
-
-  let circleX = cWidth / 2;
-  let circleY = cHeight * 0.8;
-
-  let radius = cWidth * 0.43;
-
-  let x = mx - circleX;
-  let y = Math.max(0, -(my - circleY));
-
-  currGuess = 1 - Math.abs(Math.atan2(y,x)/Math.PI);
-  sendGuess(currGuess);
-  redraw();
-
-}
-
-/** DRAW THE FULL WAVELENGTH BOARD */
-function drawBoard(ctx, w, h, option1, option2, answerNormalized, guessNormalized, hideAnswer) {
-
-  // Prep the drawing context
-  context.textAlign = "center";
-  context.lineCap = "round";
-
-  // Constants
-  let circleX = w / 2;
-  let circleY = h * 0.8;
-
-  // Outer circle
-  ctx.fillStyle = "#0e1232";
-  ctx.beginPath();
-  ctx.arc(circleX, circleY, w * 0.48, 0, 2 * Math.PI);
-  ctx.fill();
-
-  // Inner circle
-  ctx.fillStyle = "#d9d5cb";
-  ctx.beginPath();
-  ctx.arc(circleX, circleY, w * 0.43, Math.PI, 2 * Math.PI);
-  ctx.fill();
-
-  // Target
-  target(ctx, circleX, circleY, answerNormalized, w * 0.43, Math.PI * 0.06);
-
-  // Cover bottom half of inner circle in case target bled into it
-  ctx.fillStyle = "#0e1232";
-  ctx.beginPath();
-  ctx.arc(circleX, circleY, w * 0.43, 0, Math.PI);
-  ctx.fill();
-
-  // Cover up the target
-  if (hideAnswer == true) {
-    ctx.fillStyle = "#00c3ff";
-    ctx.beginPath();
-    ctx.arc(circleX, circleY, w * 0.43, Math.PI, 2 * Math.PI);
-    ctx.fill();
-  }
-
-  // Guess knob
-  ctx.fillStyle = "#ff2a00";
-  ctx.beginPath();
-  ctx.arc(circleX, circleY, w * 0.1, Math.PI, 2 * Math.PI);
-  ctx.fill();
-
-  // Guess line
-  function drawGuess(guessNormalized, color){
-    let guessLen = w * 0.4;
-    let range = Math.PI;
-    ctx.strokeStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(circleX, circleY);
-    let guessX = Math.cos(guessNormalized * range);
-    let guessY = Math.sin(guessNormalized * range);
-    ctx.lineTo(circleX - guessX * guessLen, circleY - guessY * guessLen);
-    // Set up appropriate stroke width for the arrows
-    context.lineWidth = cWidth * 0.008;
-    ctx.stroke();
-
-  }
-  drawGuess(guessNormalized, "#ff2a00");
-
-
-  if ( allPeeps ){
-    var teamShown = document.getElementById("showGreen").checked ? "green" : "blue";
-
-    var now = new Date().getTime();
-    for (var key in allPeeps){
-      var userData = allPeeps[key];
-
-      // timeout after 10 minutes
-      // if ( (now - userData.ts ) > (10 * 60 * 1000)){
-      //   delete allPeeps[key];
-      //   console.log("deleting " + key);
-      //   continue;
-      // }
-
-      if ( teamShown == userData.team && userData.currGuess ){
-        drawGuess( userData.currGuess, teamShown);
+    function handleInput(event) {
+      switch (event.keyCode) {
+        case 37:
+          // left key pressed
+          currGuess -= 0.01;
+          if (currGuess <= 0) {
+            currGuess = 0;
+          }
+          redraw();
+          sendGuess(currGuess);
+          break;
+        case 39:
+          // right key pressed
+          currGuess += 0.01;
+          if (currGuess >= 1) {
+            currGuess = 1;
+          }
+          redraw();
+          sendGuess(currGuess);
+          break;
       }
     }
-  }
 
+    function clickToGuess(event) {
 
-  // Spectrum
-  let spectrumItemWidth = w * 0.34;
-  let spectrumItemHeight = w * 0.21;
-  let arrowWidth = w * 0.11;
-  // Set up appropriate stroke width for the arrows
-  context.lineWidth = cWidth * 0.004;
+      let rect = event.target.getBoundingClientRect();
 
-  // Left option
-  roundRect(ctx, "#d491a4", circleX - spectrumItemWidth, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
-  text(ctx, "#0e1232", circleX - spectrumItemWidth / 2, h - spectrumItemHeight * 0.4, option1);
-  arrow(ctx, "#0e1232", circleX - spectrumItemWidth / 2 + arrowWidth / 2, circleX - spectrumItemWidth / 2 - arrowWidth / 2, h - spectrumItemHeight * 0.65, w * 0.011, w * 0.015);
+      var cx, cy;
+      if (event.targetTouches) {
+        cx = event.targetTouches[0].clientX;
+        cy = event.targetTouches[0].clientY;
 
-  // Right option
-  roundRect(ctx, "#a1d0cc", circleX, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
-  text(ctx, "#0e1232", circleX + spectrumItemWidth / 2, h - spectrumItemHeight * 0.4, option2);
-  arrow(ctx, "#0e1232", circleX + spectrumItemWidth / 2 - arrowWidth / 2, circleX + spectrumItemWidth / 2 + arrowWidth / 2, h - spectrumItemHeight * 0.65, w * 0.011, w * 0.015);
+        // prevent scrolling
+        event.preventDefault();
+      } else {
+        cx = event.clientX;
+        cy = event.clientY;
+      }
 
-}
+      let mx = cx - rect.left;
+      let my = cy - rect.top;
 
-/** DRAW THE 3 TIERED TARGET */
-function target(ctx, circleX, circleY, answerNormalized, radius, sectionWRadians) {
-  let range = Math.PI - sectionWRadians;
+      let circleX = cWidth / 2;
+      let circleY = cHeight * 0.8;
 
-  // bulls eye
-  let bullsEyeStart = Math.PI + range * answerNormalized;
-  ctx.fillStyle = "#cc6245";
-  ctx.beginPath();
-  ctx.moveTo(circleX, circleY);
-  ctx.arc(circleX, circleY, radius, bullsEyeStart, bullsEyeStart + sectionWRadians);
-  ctx.moveTo(circleX, circleY);
-  ctx.fill();
+      let radius = cWidth * 0.43;
 
-  // inner bits
-  ctx.fillStyle = "#a7c7a0";
-  ctx.beginPath();
-  ctx.moveTo(circleX, circleY);
-  ctx.arc(circleX, circleY, radius, bullsEyeStart - sectionWRadians, bullsEyeStart);
-  ctx.moveTo(circleX, circleY);
-  ctx.fill();
+      let x = mx - circleX;
+      let y = Math.max(0, -(my - circleY));
 
-  ctx.beginPath();
-  ctx.moveTo(circleX, circleY);
-  ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians, bullsEyeStart + sectionWRadians * 2);
-  ctx.moveTo(circleX, circleY);
-  ctx.fill();
+      currGuess = 1 - Math.abs(Math.atan2(y, x) / Math.PI);
+      sendGuess(currGuess);
+      redraw();
 
-  // outer bits
-  ctx.fillStyle = "#c29140";
-  ctx.beginPath();
-  ctx.moveTo(circleX, circleY);
-  ctx.arc(circleX, circleY, radius, bullsEyeStart - sectionWRadians * 2, bullsEyeStart - sectionWRadians);
-  ctx.moveTo(circleX, circleY);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(circleX, circleY);
-  ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians * 2, bullsEyeStart + sectionWRadians * 3);
-  ctx.moveTo(circleX, circleY);
-  ctx.fill();
-
-  // scoring text
-  try{
-    ctx.save();
-    ctx.translate(circleX, circleY);
-    ctx.rotate(bullsEyeStart - sectionWRadians*1.5 + Math.PI/2);
-
-    let textHeight = -radius*0.85;
-
-    for ( var i = 0 ; i < 5; i ++){
-      let score = 4 - Math.abs(4 - (i + 2));
-
-      let sectionRadianStart = ((bullsEyeStart + sectionWRadians*(i-2))/Math.PI - 1);
-      let guessDiff = (currGuess - sectionRadianStart);
-      let isOnTarget = guessDiff > 0 && guessDiff < sectionWRadians/Math.PI;
-
-      let color = isOnTarget ? "white" : "black";
-      text(ctx, color, 0, textHeight, score);
-      ctx.rotate(sectionWRadians);
     }
-  }finally{
-    ctx.restore();
-  }
 
-}
+    /** DRAW THE FULL WAVELENGTH BOARD */
+    function drawBoard(ctx, w, h, option1, option2, answerNormalized, guessNormalized, hideAnswer) {
+      // Clear context
+      context.clearRect(0, 0, canvas.width, canvas.height);
 
-/** DRAW AN ARROW HORIZONTALLY */
-function arrow(ctx, color, fromX, toX, y, arrowheadX, arrowheadY) {
-  ctx.strokeStyle = color;
-  var sign = 1;
-  if (fromX < toX) {
-    sign = -1;
-  }
+      // Prep the drawing context
+      context.textAlign = "center";
+      context.lineCap = "round";
 
-  ctx.beginPath();
-  ctx.moveTo(fromX, y);
-  ctx.lineTo(toX, y);
-  ctx.moveTo(toX, y);
-  ctx.lineTo(toX + sign * arrowheadX, y + arrowheadY);
-  ctx.moveTo(toX, y);
-  ctx.lineTo(toX + sign * arrowheadX, y - arrowheadY);
-  ctx.stroke();
-}
+      // Constants
+      let circleX = w / 2;
+      let circleY = h * 0.8;
 
-/** DRAW CARD TEXT */
-function text(ctx, color, x, y, text, font) {
-  ctx.fillStyle = color;
-  if (typeof font === 'undefined') {
-    font = "16px Futura";
-  }
-  ctx.font = font;
-  ctx.fillText(text, x, y);
-}
+      // Outer circle
+      ctx.fillStyle = "#0e1232";
+      ctx.beginPath();
+      ctx.arc(circleX, circleY, w * 0.48, 0, 2 * Math.PI);
+      ctx.fill();
 
-/** DRAW CARD RECTS */
-function roundRect(ctx, color, x, y, width, height, radius) {
-  ctx.fillStyle = color;
-  if (typeof radius === 'undefined') {
-    radius = 5;
-  }
-  if (typeof radius === 'number') {
-    radius = {
-      tl: radius,
-      tr: radius,
-      br: radius,
-      bl: radius
-    };
-  } else {
-    var defaultRadius = {
-      tl: 0,
-      tr: 0,
-      br: 0,
-      bl: 0
-    };
-    for (var side in defaultRadius) {
-      radius[side] = radius[side] || defaultRadius[side];
+      // Inner circle
+      ctx.fillStyle = "#d9d5cb";
+      ctx.beginPath();
+      ctx.arc(circleX, circleY, w * 0.43, Math.PI, 2 * Math.PI);
+      ctx.fill();
+
+      // Target
+      target(ctx, circleX, circleY, answerNormalized, w * 0.43, Math.PI * 0.06);
+
+      // Cover bottom half of inner circle in case target bled into it
+      ctx.fillStyle = "#0e1232";
+      ctx.beginPath();
+      ctx.arc(circleX, circleY, w * 0.43, 0, Math.PI);
+      ctx.fill();
+
+      // Cover up the target
+      if (hideAnswer == true) {
+        ctx.fillStyle = "#00c3ff";
+        ctx.beginPath();
+        ctx.arc(circleX, circleY, w * 0.43, Math.PI, 2 * Math.PI);
+        ctx.fill();
+      }
+
+      // Guess knob
+      ctx.fillStyle = "#ff2a00";
+      ctx.beginPath();
+      ctx.arc(circleX, circleY, w * 0.1, Math.PI, 2 * Math.PI);
+      ctx.fill();
+
+      // Guess line
+      function drawGuess(guessNormalized, color, name) {
+        let guessLen = w * 0.4;
+        let range = Math.PI;
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(circleX, circleY);
+        let guessX = Math.cos(guessNormalized * range);
+        let guessY = Math.sin(guessNormalized * range);
+        let guessEndpointX = circleX - guessX * guessLen;
+        let guessEndpointY = circleY - guessY * guessLen;
+        ctx.lineTo(guessEndpointX, guessEndpointY);
+        // Set up appropriate stroke width for the arrows
+        context.lineWidth = cWidth * 0.008;
+        ctx.stroke();
+
+        // draw username associated with the guess
+        if (name != null) {
+          let textCenterX = guessEndpointX;
+          let textCenterY = guessEndpointY - 30;
+          // hacks to get a close approximation of text size plus a little extra
+          let nameWidth = ctx.measureText(name + "  ").width;
+          let nameHeight = ctx.measureText("Mi").width;
+          // round rect background to the name for legibility
+          roundRect(ctx, "lightgray", textCenterX - (nameWidth / 2), textCenterY - nameHeight, nameWidth, 30, 4);
+          text(ctx, color, textCenterX, textCenterY, name);
+        }
+      }
+      drawGuess(guessNormalized, "#ff2a00", null);
+
+
+      if (allPeeps) {
+        var teamShown = document.getElementById("showGreen").checked ? "green" : "blue";
+
+        var now = new Date().getTime();
+        for (var key in allPeeps) {
+          var userData = allPeeps[key];
+
+          // timeout after 10 minutes
+          // if ( (now - userData.ts ) > (10 * 60 * 1000)){
+          //   delete allPeeps[key];
+          //   console.log("deleting " + key);
+          //   continue;
+          // }
+
+          if (teamShown == userData.team && userData.currGuess) {
+            drawGuess(userData.currGuess, teamShown, userData.username);
+          }
+        }
+      }
+
+
+      // Spectrum
+      let spectrumItemWidth = w * 0.34;
+      let spectrumItemHeight = w * 0.21;
+      let arrowWidth = w * 0.11;
+      // Set up appropriate stroke width for the arrows
+      context.lineWidth = cWidth * 0.004;
+
+      // Left option
+      roundRect(ctx, "#d491a4", circleX - spectrumItemWidth, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
+      text(ctx, "#0e1232", circleX - spectrumItemWidth / 2, h - spectrumItemHeight * 0.4, option1);
+      arrow(ctx, "#0e1232", circleX - spectrumItemWidth / 2 + arrowWidth / 2, circleX - spectrumItemWidth / 2 - arrowWidth / 2, h - spectrumItemHeight * 0.65, w * 0.011, w * 0.015);
+
+      // Right option
+      roundRect(ctx, "#a1d0cc", circleX, h - spectrumItemHeight * 0.8, spectrumItemWidth, spectrumItemHeight, 10);
+      text(ctx, "#0e1232", circleX + spectrumItemWidth / 2, h - spectrumItemHeight * 0.4, option2);
+      arrow(ctx, "#0e1232", circleX + spectrumItemWidth / 2 - arrowWidth / 2, circleX + spectrumItemWidth / 2 + arrowWidth / 2, h - spectrumItemHeight * 0.65, w * 0.011, w * 0.015);
+
     }
-  }
-  ctx.beginPath();
-  ctx.moveTo(x + radius.tl, y);
-  ctx.lineTo(x + width - radius.tr, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-  ctx.lineTo(x + width, y + height - radius.br);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-  ctx.lineTo(x + radius.bl, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-  ctx.lineTo(x, y + radius.tl);
-  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
-  ctx.closePath();
-  ctx.fill();
-}
+
+    /** DRAW THE 3 TIERED TARGET */
+    function target(ctx, circleX, circleY, answerNormalized, radius, sectionWRadians) {
+      let range = Math.PI - sectionWRadians;
+
+      // bulls eye
+      let bullsEyeStart = Math.PI + range * answerNormalized;
+      ctx.fillStyle = "#cc6245";
+      ctx.beginPath();
+      ctx.moveTo(circleX, circleY);
+      ctx.arc(circleX, circleY, radius, bullsEyeStart, bullsEyeStart + sectionWRadians);
+      ctx.moveTo(circleX, circleY);
+      ctx.fill();
+
+      // inner bits
+      ctx.fillStyle = "#a7c7a0";
+      ctx.beginPath();
+      ctx.moveTo(circleX, circleY);
+      ctx.arc(circleX, circleY, radius, bullsEyeStart - sectionWRadians, bullsEyeStart);
+      ctx.moveTo(circleX, circleY);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(circleX, circleY);
+      ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians, bullsEyeStart + sectionWRadians * 2);
+      ctx.moveTo(circleX, circleY);
+      ctx.fill();
+
+      // outer bits
+      ctx.fillStyle = "#c29140";
+      ctx.beginPath();
+      ctx.moveTo(circleX, circleY);
+      ctx.arc(circleX, circleY, radius, bullsEyeStart - sectionWRadians * 2, bullsEyeStart - sectionWRadians);
+      ctx.moveTo(circleX, circleY);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(circleX, circleY);
+      ctx.arc(circleX, circleY, radius, bullsEyeStart + sectionWRadians * 2, bullsEyeStart + sectionWRadians * 3);
+      ctx.moveTo(circleX, circleY);
+      ctx.fill();
+
+      // scoring text
+      try {
+        ctx.save();
+        ctx.translate(circleX, circleY);
+        ctx.rotate(bullsEyeStart - sectionWRadians * 1.5 + Math.PI / 2);
+
+        let textHeight = -radius * 0.85;
+
+        for (var i = 0; i < 5; i++) {
+          let score = 4 - Math.abs(4 - (i + 2));
+
+          let sectionRadianStart = ((bullsEyeStart + sectionWRadians * (i - 2)) / Math.PI - 1);
+          let guessDiff = (currGuess - sectionRadianStart);
+          let isOnTarget = guessDiff > 0 && guessDiff < sectionWRadians / Math.PI;
+
+          let color = isOnTarget ? "white" : "black";
+          text(ctx, color, 0, textHeight, score);
+          ctx.rotate(sectionWRadians);
+        }
+      } finally {
+        ctx.restore();
+      }
+
+    }
+
+    /** DRAW AN ARROW HORIZONTALLY */
+    function arrow(ctx, color, fromX, toX, y, arrowheadX, arrowheadY) {
+      ctx.strokeStyle = color;
+      var sign = 1;
+      if (fromX < toX) {
+        sign = -1;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(fromX, y);
+      ctx.lineTo(toX, y);
+      ctx.moveTo(toX, y);
+      ctx.lineTo(toX + sign * arrowheadX, y + arrowheadY);
+      ctx.moveTo(toX, y);
+      ctx.lineTo(toX + sign * arrowheadX, y - arrowheadY);
+      ctx.stroke();
+    }
+
+    /** DRAW CARD TEXT */
+    function text(ctx, color, x, y, text, font) {
+      ctx.fillStyle = color;
+      if (typeof font === 'undefined') {
+        font = "16px Futura";
+      }
+      ctx.font = font;
+      ctx.fillText(text, x, y);
+    }
+
+    /** DRAW CARD RECTS */
+    function roundRect(ctx, color, x, y, width, height, radius) {
+      ctx.fillStyle = color;
+      if (typeof radius === 'undefined') {
+        radius = 5;
+      }
+      if (typeof radius === 'number') {
+        radius = {
+          tl: radius,
+          tr: radius,
+          br: radius,
+          bl: radius
+        };
+      } else {
+        var defaultRadius = {
+          tl: 0,
+          tr: 0,
+          br: 0,
+          bl: 0
+        };
+        for (var side in defaultRadius) {
+          radius[side] = radius[side] || defaultRadius[side];
+        }
+      }
+      ctx.beginPath();
+      ctx.moveTo(x + radius.tl, y);
+      ctx.lineTo(x + width - radius.tr, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+      ctx.lineTo(x + width, y + height - radius.br);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+      ctx.lineTo(x + radius.bl, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+      ctx.lineTo(x, y + radius.tl);
+      ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+      ctx.closePath();
+      ctx.fill();
+    }
   </script>
 
 
@@ -530,13 +556,13 @@ function roundRect(ctx, color, x, y, width, height, radius) {
   <script>
     // websocket stuff
     function uuidv4() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
     }
 
-    var $ = function(id){ return document.getElementById(id); };
+    var $ = function (id) { return document.getElementById(id); };
 
     var uid = uuidv4();
     var userData;
@@ -553,13 +579,13 @@ function roundRect(ctx, color, x, y, width, height, radius) {
     showBlue.addEventListener("change", redraw);
 
     var connectStatus = $("connectStatus");
-    function setConnectStatus(status){
+    function setConnectStatus(status) {
       connectStatus.textContent = status;
     }
-    
+
 
     // relative path to websocket 
-    function relativePath(path){
+    function relativePath(path) {
       var loc = window.location, new_uri;
       if (loc.protocol === "https:") {
         new_uri = "wss:";
@@ -571,34 +597,34 @@ function roundRect(ctx, color, x, y, width, height, radius) {
       return new_uri
     }
 
-    function sendGuess(guess){
-      if ( ws ){
-        var data = Object.assign({}, 
-                                 userData, 
-                                 { 
-                                   currGuess: guess,
-                                   type: 'userUpdate'
-                                 });
+    function sendGuess(guess) {
+      if (ws) {
+        var data = Object.assign({},
+          userData,
+          {
+            currGuess: guess,
+            type: 'userUpdate'
+          });
         ws.send(JSON.stringify(data));
       }
     }
 
-    function genUsername(){
+    function genUsername() {
       return randomElement(adjectives) + ' ' + randomElement(animals);
     }
 
-    function updatePeepsTeam(team){
+    function updatePeepsTeam(team) {
       var container = document.getElementById(team + 'Peeps');
-      
+
       var peeps = [];
-      for ( var uid in allPeeps ){
+      for (var uid in allPeeps) {
         var peep = allPeeps[uid];
-        if ( peep.team == team ){
+        if (peep.team == team) {
           peeps.push(peep);
         }
       }
 
-      peeps.sort(function(a, b) {
+      peeps.sort(function (a, b) {
         var nameA = a.username.toLowerCase(); // ignore upper and lowercase
         var nameB = b.username.toLowerCase(); // ignore upper and lowercase
         if (nameA < nameB) {
@@ -612,15 +638,15 @@ function roundRect(ctx, color, x, y, width, height, radius) {
         return 0;
       });
 
-      for ( var i = 0; i < peeps.length; i ++){
+      for (var i = 0; i < peeps.length; i++) {
         var peep = peeps[i];
         var node;
-        if ( i < container.children.length ){
+        if (i < container.children.length) {
           node = container.children[i];
-        }else{
+        } else {
           node = document.createElement("div");
-          node.addEventListener('mousedown', function(e){
-            if ( ws ){
+          node.addEventListener('mousedown', function (e) {
+            if (ws) {
               console.log(allPeeps);
               var targetuid = e.target.getAttribute("data-uid");
               console.log(targetuid);
@@ -631,108 +657,107 @@ function roundRect(ctx, color, x, y, width, height, radius) {
               });
               startRound(msg);
               ws.send(JSON.stringify(msg));
-            }      
-            
+            }
+
           });
 
         }
 
-        if ( peep == userData ){
-          node.textContent = peep.username +  '(Me)';
-        }else{
+        if (peep == userData) {
+          node.textContent = peep.username + '(Me)';
+        } else {
           node.textContent = peep.username;
         }
         node.setAttribute("data-uid", peep.uid);
 
-        if ( peep.uid == scores.turn ){
+        if (peep.uid == scores.turn) {
           node.style.color = "black";
           node.style.cursor = null;
-        }else{
+        } else {
           node.style.color = peep.team;
-          node.style.cursor = "pointer";          
+          node.style.cursor = "pointer";
         }
 
 
 
-        if ( ! node.parentElement ) container.appendChild(node);
+        if (!node.parentElement) container.appendChild(node);
 
       }
 
       var childCount = container.children.length;
-      for ( var i = peeps.length ; i < childCount; i ++){
+      for (var i = peeps.length; i < childCount; i++) {
         container.removeChild(container.lastChild);
       }
 
     }
 
-    function updatePeeps(){
+    function updatePeeps() {
       updatePeepsTeam('green');
       updatePeepsTeam('blue');
     }
 
-    function updateScores(){
+    function updateScores() {
       $('blue-score').textContent = scores.blue;
       $('green-score').textContent = scores.green;
-      
+
     }
 
-    function startRound(msg){
+    function startRound(msg) {
       var peep = msg.peep;
       scores.turn = peep.uid;
 
-      if ( peep.uid == userData.uid ){
+      if (peep.uid == userData.uid) {
         currTarget = Math.random();
         hide = false;
 
         var revealButton = $('reveal');
         $('reveal').classList.remove('disabled');
 
-        revealButton.style.display=null;
-        var leftMargin = canvas.clientWidth/2 - revealButton.clientWidth/2;
-        revealButton.style.marginLeft= leftMargin + "px";
+        revealButton.style.display = null;
+        var leftMargin = canvas.clientWidth / 2 - revealButton.clientWidth / 2;
+        revealButton.style.marginLeft = leftMargin + "px";
 
-        
+
         redraw();
-      }else{
+      } else {
         hide = true;
         currGuess = 0.5;
-        $('reveal').style.display="none";
+        $('reveal').style.display = "none";
         redraw();
       }
 
-      var isGreenRound = (peep.team == "green");
-      if ( peep.team == "green"){
+      if (peep.team == "green") {
         $('showGreen').checked = true;
-      }else{
+      } else {
         $('showBlue').checked = true;
       }
 
       updatePeeps();
-      
+
     }
 
-    function updateCards(){
-      if ( ws ){
+    function updateCards() {
+      if (ws) {
         var data = Object.assign({}, {
           type: 'updateCards',
           left: $('leftItem').value,
           right: $('rightItem').value
         });
         ws.send(JSON.stringify(data));
-      }      
+      }
     }
 
-    function adjustUsername(){
+    function adjustUsername() {
       var username = $('username').value;
-      if ( userData && username){
-        userData.username =  username;
+      if (userData && username) {
+        userData.username = username;
         updatePeeps();
         sendGuess(currGuess);
       }
     }
 
-    function reveal(){
-      if ( ws ){
+    function reveal() {
+      if (ws) {
         var data = Object.assign({}, {
           type: 'reveal',
           target: currTarget
@@ -742,21 +767,21 @@ function roundRect(ctx, color, x, y, width, height, radius) {
       }
     }
 
-    function adjustScore(team, delta){
+    function adjustScore(team, delta) {
       scores[team] = Math.max(0, delta + scores[team]);
-      
+
       updateScores();
-      if ( ws ){
+      if (ws) {
         var data = Object.assign({}, {
           type: 'updateScore',
           team: team,
           score: scores[team]
         });
         ws.send(JSON.stringify(data));
-      }      
+      }
     }
 
-    function connect(team){
+    function connect(team) {
       userData = {
         uid: uid,
         team: team,
@@ -764,7 +789,7 @@ function roundRect(ctx, color, x, y, width, height, radius) {
       }
       allPeeps = {};
       allPeeps[uid] = userData;
-      scores = {green: 0, blue: 0, turn: null};
+      scores = { green: 0, blue: 0, turn: null };
 
       ws = new WebSocket(relativePath("/ws"));
       setConnectStatus("connecting..");
@@ -776,70 +801,76 @@ function roundRect(ctx, color, x, y, width, height, radius) {
         $("teamDiv").textContent = "You are on team " + team + ".";
         $("teamDiv").style.color = team;
 
+        if (team == "green") {
+          $('showGreen').checked = true;
+        } else {
+          $('showBlue').checked = true;
+        }
+
         $('username').value = userData.username;
-        
+
         sendGuess(currGuess);
 
         notConnectedContainer.style.display = "none";
         connectedContainer.style.display = null;
 
         var marquee = $('info-marquee');
-        startMarquee(marquee);        
-        
+        startMarquee(marquee);
+
         console.log("connected.");
         setConnectStatus("connected");
 
         updatePeeps();
       };
-        
+
       ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
 
-        switch (msg.type){
+        switch (msg.type) {
 
-        case 'userUpdate':
-          
-          msg.ts = new Date().getTime();
-          allPeeps[msg.uid] = msg;
-          redraw();
-          updatePeeps();
+          case 'userUpdate':
 
-          break;
+            msg.ts = new Date().getTime();
+            allPeeps[msg.uid] = msg;
+            redraw();
+            updatePeeps();
+
+            break;
 
 
-        case 'updateCards':
-          $('leftItem').value = msg.left;
-          $('rightItem').value = msg.right;
-          redraw();
-          break;
+          case 'updateCards':
+            $('leftItem').value = msg.left;
+            $('rightItem').value = msg.right;
+            redraw();
+            break;
 
-        case 'startRound':
-          startRound(msg);
+          case 'startRound':
+            startRound(msg);
 
-          break;
+            break;
 
-        case 'reveal':
-          hide = false;
-          currTarget = msg.target;
+          case 'reveal':
+            hide = false;
+            currTarget = msg.target;
 
-          redraw();
-          break;
+            redraw();
+            break;
 
-        case 'updateScore':
-          
-          scores[msg.team] = msg.score;
-          updateScores();
-          break;
+          case 'updateScore':
 
-        case 'userLeft':
-          delete allPeeps[msg.uid];
-          updatePeeps();
-          break;
+            scores[msg.team] = msg.score;
+            updateScores();
+            break;
+
+          case 'userLeft':
+            delete allPeeps[msg.uid];
+            updatePeeps();
+            break;
 
         }
 
       }
-      ws.onclose = function (event){
+      ws.onclose = function (event) {
         console.log("closing");
         setConnectStatus("not connected");
 
@@ -851,12 +882,13 @@ function roundRect(ctx, color, x, y, width, height, radius) {
         scores = null;
 
       }
-      
+
     }
 
     connectGreenButton.addEventListener("click", connect.bind(null, "green"));
     connectBlueButton.addEventListener("click", connect.bind(null, "blue"));
 
-    </script>
+  </script>
 </body>
+
 </html>
