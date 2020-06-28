@@ -140,9 +140,48 @@
     <input type="text" id="rightItem" name="rightItem" value="Good use of time during pandemic"><br>
   </form>
   <button id="update-cards" onclick="updateCards();">Update Cards</button><br>
+  <div id="randomCardContainer" style="display:none;">
+    <button id="pickRandomCard" onclick="pickRandomCard();">Pick Random Card</button><br>
+  </div>
   <button id="reroll">Reroll Target</button><br>
   <button id="hideToggle">Toggle Target Hidden</button><br><br>
   <p>Use the left and right arrow keys to move the guess line.</p>
+
+  <form id="cardLoader" name="cardLoader" enctype="multipart/form-data" method="post">
+    <fieldset>
+      <label for="cardFileInput">Card JSON File</label><br>
+      <input type='file' id='cardFileInput'>
+      <input type='button' id='cardLoadButton' value='Load' onclick='loadCardFile();'><br>
+      <label id="cardNumLabel" style="display:none"># Cards Loaded</label>
+    </fieldset>
+  </form>
+
+  <script>
+    var cardList = [];
+
+    function loadCardFile() {
+      var input, file, fr;
+
+      input = document.getElementById('cardFileInput');
+      if (!input.files[0]) {
+        alert("Please select a file before clicking 'Load'");
+      }
+      else {
+        file = input.files[0];
+        fr = new FileReader();
+        fr.onload = onFileLoaded;
+        fr.readAsText(file);
+      }
+
+      function onFileLoaded(event) {
+        let lines = event.target.result;
+        cardList = JSON.parse(lines);
+        $('randomCardContainer').style.display = null;
+        $('cardNumLabel').innerHTML = String(cardList.length) + " cards loaded";
+        $('cardNumLabel').style.display = null;
+      }
+    }
+  </script>
 
   <script>
     var animals = [
@@ -581,6 +620,7 @@
     var myTurn = false;
     var connectGreenButton = $("connectGreenButton");
     var connectBlueButton = $("connectBlueButton");
+    var cardList = [];
 
     var connectedContainer = $("connectedContainer");
     var notConnectedContainer = $("notConnectedContainer");
@@ -760,6 +800,28 @@
         });
         ws.send(JSON.stringify(data));
       }
+    }
+
+    function pickRandomCard() {
+      if (cardList.length == 0) {
+        return;
+      }
+
+      var card = randomElement(cardList);
+      $('leftItem').value = card[0];
+      $('rightItem').value = card[1];
+      currTarget = Math.random();
+
+      if (ws) {
+        var data = Object.assign({}, {
+          type: 'updateCards',
+          left: $('leftItem').value,
+          right: $('rightItem').value
+        });
+        ws.send(JSON.stringify(data));
+      }
+
+      redraw();
     }
 
     function adjustUsername() {
